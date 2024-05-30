@@ -5,5 +5,5 @@ import (
 )
 
 func SetupEndpoints(app *fiber.App) {
-	usersEndpoints(app)
+	accountsEndpoints(app)
 }
