@@ -1,4 +1,4 @@
-module github.com/henrique998/go-setup
+module github.com/henrique998/go-auth
 
 go 1.22.2
 

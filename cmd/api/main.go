@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v3"
-	"github.com/henrique998/go-setup/internal/infra/endpoints"
+	"github.com/henrique998/go-auth/internal/infra/endpoints"
 	"github.com/joho/godotenv"
 )
 

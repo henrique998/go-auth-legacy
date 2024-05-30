@@ -12,8 +12,8 @@ package mocks
 import (
 	reflect "reflect"
 
-	entities "github.com/henrique998/go-setup/internal/app/entities"
-	errors "github.com/henrique998/go-setup/internal/app/errors"
+	entities "github.com/henrique998/go-auth/internal/app/entities"
+	errors "github.com/henrique998/go-auth/internal/app/errors"
 	gomock "go.uber.org/mock/gomock"
 )
 

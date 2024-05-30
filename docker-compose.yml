@@ -10,7 +10,7 @@ services:
     environment:
       - POSTGRES_USER=henrique
       - POSTGRES_PASSWORD=123456
-      - POSTGRES_DB=myDb
+      - POSTGRES_DB=go-auth
     networks:
       - pg_net
   pgadmin:
