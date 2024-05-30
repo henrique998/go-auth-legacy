@@ -1,0 +1,8 @@
+POST https://3333-henrique998-gosetup-9olh7u730v7.ws-us114.gitpod.io/users
+content-type: application/json
+
+{
+  "name": "henrique",
+  "email": "henrique@gmail.com",
+  "password": "123456"
+}
