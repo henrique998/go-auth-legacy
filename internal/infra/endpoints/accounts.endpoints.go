@@ -7,4 +7,5 @@ import (
 
 func accountsEndpoints(app *fiber.App) {
 	app.Post("/accounts", accountscontrollers.CreateAccountController)
+	app.Get("/accounts/verify-email", accountscontrollers.VerifyEmailAccountController)
 }

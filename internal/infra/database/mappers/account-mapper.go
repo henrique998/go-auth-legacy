@@ -22,7 +22,7 @@ type DbAccountData struct {
 	UpdatedAt        *time.Time
 }
 
-func MapToAccount(data DbAccountData) entities.IAccount {
+func MapToAccount(data DbAccountData) entities.Account {
 	var lastLoginAt time.Time
 	if data.LastLoginAt != nil {
 		lastLoginAt = *data.LastLoginAt
@@ -48,7 +48,7 @@ func MapToAccount(data DbAccountData) entities.IAccount {
 		updatedAt = *data.UpdatedAt
 	}
 
-	return entities.NewExistingAccount(
+	return *entities.NewExistingAccount(
 		data.ID,
 		data.Name,
 		data.Email,

@@ -1,9 +1,9 @@
-POST https://3333-henrique998-goauth-8h49qimho84.ws-us114.gitpod.io/users
+POST https://3333-henrique998-goauth-8h49qimho84.ws-us114.gitpod.io/accounts
 content-type: application/json
 
 {
   "name": "henrique",
-  "email": "henrique@gmail.com",
+  "email": "henriquemonteiro037@gmail.com",
   "password": "123456",
   "phone": "99999999"
 }

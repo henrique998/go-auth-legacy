@@ -6,6 +6,8 @@ import (
 )
 
 type AccountsRepository interface {
-	Create(u entities.IAccount) errors.IAppError
-	FindByEmail(email string) *entities.IAccount
+	FindById(accountId string) (*entities.Account, errors.IAppError)
+	FindByEmail(email string) (*entities.Account, errors.IAppError)
+	Create(u entities.Account) errors.IAppError
+	Update(u *entities.Account) errors.IAppError
 }

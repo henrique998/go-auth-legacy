@@ -11,7 +11,7 @@ func TestUser_it_should_create_a_new_user(t *testing.T) {
 
 	user := NewAccount("Henrique", "henriquemonteiro@gmail.com", "12345", "999999999")
 
-	assert.Equal("Henrique", user.GetName())
-	assert.Equal("henriquemonteiro@gmail.com", user.GetEmail())
-	assert.Equal("12345", user.GetPass())
+	assert.Equal("Henrique", user.Name)
+	assert.Equal("henriquemonteiro@gmail.com", user.Email)
+	assert.Equal("12345", user.Pass)
 }
