@@ -6,4 +6,5 @@ import (
 
 func SetupEndpoints(app *fiber.App) {
 	accountsEndpoints(app)
+	sessionEndpoints(app)
 }

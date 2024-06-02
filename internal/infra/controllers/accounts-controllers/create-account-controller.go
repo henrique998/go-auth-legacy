@@ -31,7 +31,6 @@ func CreateAccountController(c fiber.Ctx) error {
 	var req request.CreateAccountRequest
 
 	jsonErr := json.Unmarshal(body, &req)
-
 	if jsonErr != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error.")
 	}

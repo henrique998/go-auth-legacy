@@ -7,3 +7,13 @@ content-type: application/json
   "password": "123456",
   "phone": "99999999"
 }
+
+###
+
+POST https://3333-henrique998-goauth-8h49qimho84.ws-us114.gitpod.io/login
+content-type: application/json
+
+{
+  "email": "henriquemonteiro037@gmail.com",
+  "password": "123456"
+}

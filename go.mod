@@ -16,9 +16,12 @@ require (
 	github.com/andybalholm/brotli v1.1.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gofiber/utils/v2 v2.0.0-beta.4 // indirect
+	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/klauspost/compress v1.17.8 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/oschwald/geoip2-golang v1.9.0 // indirect
+	github.com/oschwald/maxminddb-golang v1.11.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/resend/resend-go/v2 v2.6.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
