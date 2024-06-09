@@ -7,4 +7,5 @@ import (
 
 func sessionEndpoints(app *fiber.App) {
 	app.Post("/login", sessioncontrollers.LoginWithCredentialsController)
+	app.Post("/refresh-token", sessioncontrollers.RefreshTokenUseController)
 }

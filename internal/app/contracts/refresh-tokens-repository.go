@@ -8,4 +8,5 @@ import (
 type RefreshTokensRepository interface {
 	FindByValue(val string) (*entities.RefreshToken, errors.IAppError)
 	Create(rt entities.RefreshToken) errors.IAppError
+	Delete(val string) errors.IAppError
 }

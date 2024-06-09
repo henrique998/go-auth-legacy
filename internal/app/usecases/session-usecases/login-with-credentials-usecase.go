@@ -69,14 +69,14 @@ func (uc *LoginWithCredentialsUseCase) Execute(req request.LoginWithCredentialsR
 }
 
 func (uc *LoginWithCredentialsUseCase) generateAuthTokens(accountId string) (string, string, errors.IAppError) {
-	tokenExpiresAt := time.Now().Add(15 * time.Minute)
+	tokenExpiresAt := time.Now().Add(15 * time.Second)
 	accessToken, tokenErr := utils.GenerateJWTToken(accountId, tokenExpiresAt, os.Getenv("JWT_SECRET"))
 	if tokenErr != nil {
 		logger.Error("Error trying to generate access token token", tokenErr)
 		return "", "", errors.NewAppError("internal server error.", 500)
 	}
 
-	refreshTokenExpiresAt := time.Now().Add(15 * time.Minute)
+	refreshTokenExpiresAt := time.Now().Add(time.Hour * 24 * 30)
 	refreshToken, tokenErr := utils.GenerateJWTToken(accountId, refreshTokenExpiresAt, os.Getenv("JWT_SECRET"))
 	if tokenErr != nil {
 		logger.Error("Error trying to generate refresh token", tokenErr)

@@ -7,13 +7,13 @@ import (
 )
 
 type Claims struct {
-	AccountID string `json:"account_id"`
+	Sub string `json:"sub"`
 	jwt.RegisteredClaims
 }
 
 func GenerateJWTToken(sub string, expiresAt time.Time, secret string) (string, error) {
 	claims := Claims{
-		AccountID: sub,
+		Sub: sub,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expiresAt),
 		},

@@ -21,7 +21,7 @@ func (r *PGVerificationTokensRepository) FindByValue(val string) (*entities.Veri
 	err := row.Scan(&verificationToken.ID, &verificationToken.AccountId, &verificationToken.Value, &verificationToken.CreatedAt, &verificationToken.ExpiresAt)
 	if err != nil && err != sql.ErrNoRows {
 		logger.Error("Error trying to find verification token!", err)
-		return nil, errors.NewAppError(err.Error(), 500)
+		return nil, errors.NewAppError("Internal server error", 500)
 	}
 
 	return &verificationToken, nil
@@ -49,7 +49,8 @@ func (r *PGVerificationTokensRepository) Delete(tokenId string) errors.IAppError
 
 	_, err := r.Db.Exec(query, tokenId)
 	if err != nil {
-		return errors.NewAppError(err.Error(), 400)
+		logger.Error("Error trying to delete refresh token", err)
+		return errors.NewAppError("Internal server error", 500)
 	}
 
 	return nil

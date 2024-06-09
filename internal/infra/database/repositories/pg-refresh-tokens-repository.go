@@ -43,3 +43,15 @@ func (r *PGRefreshTokensRepository) Create(rt entities.RefreshToken) errors.IApp
 
 	return nil
 }
+
+func (r *PGRefreshTokensRepository) Delete(val string) errors.IAppError {
+	query := "DELETE FROM refresh_tokens WHERE refresh_token = $1"
+
+	_, err := r.Db.Exec(query, val)
+	if err != nil {
+		logger.Error("Error trying to delete refresh token", err)
+		return errors.NewAppError("Internal server error", 500)
+	}
+
+	return nil
+}
