@@ -21,10 +21,14 @@ func LoginWithCredentialsController(c fiber.Ctx) error {
 	repo := repositories.PGAccountsRepository{
 		Db: db,
 	}
+	rtRepo := repositories.PGRefreshTokensRepository{
+		Db: db,
+	}
 	emailProvider := providers.ResendEmailProvider{ApiKey: os.Getenv("RESEND_API_KEY")}
 
 	usecase := sessionusecases.LoginWithCredentialsUseCase{
 		Repo:          &repo,
+		RTRepo:        &rtRepo,
 		EmailProvider: &emailProvider,
 	}
 
@@ -38,10 +42,15 @@ func LoginWithCredentialsController(c fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error.")
 	}
 
-	token, err := usecase.Execute(req)
+	accessToken, refreshToken, err := usecase.Execute(req)
 	if err != nil {
 		return c.Status(err.GetStatus()).SendString(err.GetMessage())
 	}
 
-	return c.SendString(token)
+	tokensMap := map[string]any{
+		"access_token":  accessToken,
+		"refresh_token": refreshToken,
+	}
+
+	return c.JSON(tokensMap)
 }

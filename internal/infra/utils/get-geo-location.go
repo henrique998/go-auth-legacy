@@ -1,26 +1,36 @@
 package utils
 
 import (
-	"net"
-
-	"github.com/oschwald/geoip2-golang"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"os"
 )
 
+type ipstackResponse struct {
+	CountryName string `json:"country_name"`
+	City        string `json:"city"`
+}
+
 func GetGeoLocation(ip string) (string, string, error) {
-	db, err := geoip2.Open("GeoLite2-City.mmdb")
-	if err != nil {
-		return "", "", err
-	}
-	defer db.Close()
+	apiKey := os.Getenv("IPSTACK_API_KEY")
+	url := fmt.Sprintf("http://api.ipstack.com/%s?access_key=%s", ip, apiKey)
 
-	ipAddress := net.ParseIP(ip)
-	record, err := db.City(ipAddress)
+	res, err := http.Get(url)
 	if err != nil {
 		return "", "", err
 	}
 
-	country := record.Country.Names["en"]
-	city := record.City.Names["en"]
+	defer res.Body.Close()
 
-	return country, city, nil
+	if res.StatusCode != http.StatusOK {
+		return "", "", fmt.Errorf("failed to get geolocation data: %s", res.Status)
+	}
+
+	var result ipstackResponse
+	if err := json.NewDecoder(res.Body).Decode(&result); err != nil {
+		return "", "", err
+	}
+
+	return result.CountryName, result.City, nil
 }
