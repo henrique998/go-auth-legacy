@@ -3,6 +3,7 @@ package sessioncontrollers
 import (
 	"encoding/json"
 	"os"
+	"time"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/henrique998/go-auth/internal/app/request"
@@ -47,10 +48,26 @@ func LoginWithCredentialsController(c fiber.Ctx) error {
 		return c.Status(err.GetStatus()).SendString(err.GetMessage())
 	}
 
-	tokensMap := map[string]any{
-		"access_token":  accessToken,
-		"refresh_token": refreshToken,
+	accessTokenCookie := fiber.Cookie{
+		Name:     "goauth:access_token",
+		Value:    accessToken,
+		Expires:  time.Now().Add(15 * time.Second),
+		HTTPOnly: true,
+		Path:     "/",
 	}
 
-	return c.JSON(tokensMap)
+	refreshTokenCookie := fiber.Cookie{
+		Name:     "goauth:refresh_token",
+		Value:    refreshToken,
+		Expires:  time.Now().Add(time.Hour * 24 * 30),
+		HTTPOnly: true,
+		Path:     "/",
+	}
+
+	c.Cookie(&accessTokenCookie)
+	c.Cookie(&refreshTokenCookie)
+
+	return c.JSON(fiber.Map{
+		"message": "success",
+	})
 }

@@ -2,6 +2,7 @@ package sessioncontrollers
 
 import (
 	"encoding/json"
+	"time"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/henrique998/go-auth/internal/app/request"
@@ -36,5 +37,26 @@ func RefreshTokenUseController(c fiber.Ctx) error {
 		return c.Status(err.GetStatus()).SendString(err.GetMessage())
 	}
 
-	return c.JSON(res)
+	accessTokenCookie := fiber.Cookie{
+		Name:     "goauth:access_token",
+		Value:    res.AccessToken,
+		Expires:  time.Now().Add(15 * time.Second),
+		HTTPOnly: true,
+		Path:     "/",
+	}
+
+	refreshTokenCookie := fiber.Cookie{
+		Name:     "goauth:refresh_token",
+		Value:    res.RefreshToken,
+		Expires:  time.Now().Add(time.Hour * 24 * 30),
+		HTTPOnly: true,
+		Path:     "/",
+	}
+
+	c.Cookie(&accessTokenCookie)
+	c.Cookie(&refreshTokenCookie)
+
+	return c.JSON(fiber.Map{
+		"message": "success",
+	})
 }

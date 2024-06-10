@@ -26,3 +26,7 @@ content-type: application/json
 {
   "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjYmVkNmVkMS00ZDY2LTQ4ZDYtOWM2Zi0zMjAzMzgxNDUwYzgiLCJleHAiOjE3MjA1MjgzODB9.q-O6VkENNXHCOypTXlNCOLNtYAtnMfeE2GCSGKJ6yzU"
 }
+
+### 
+
+POST https://3333-henrique998-goauth-8h49qimho84.ws-us114.gitpod.io/logout
