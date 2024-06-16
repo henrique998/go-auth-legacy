@@ -51,7 +51,7 @@ func LoginWithCredentialsController(c fiber.Ctx) error {
 	accessTokenCookie := fiber.Cookie{
 		Name:     "goauth:access_token",
 		Value:    accessToken,
-		Expires:  time.Now().Add(15 * time.Second),
+		Expires:  time.Now().Add(15 * time.Minute),
 		HTTPOnly: true,
 		Path:     "/",
 	}

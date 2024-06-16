@@ -69,7 +69,7 @@ func (uc *LoginWithCredentialsUseCase) Execute(req request.LoginWithCredentialsR
 }
 
 func (uc *LoginWithCredentialsUseCase) generateAuthTokens(accountId string) (string, string, errors.IAppError) {
-	tokenExpiresAt := time.Now().Add(15 * time.Second)
+	tokenExpiresAt := time.Now().Add(15 * time.Minute)
 	accessToken, tokenErr := utils.GenerateJWTToken(accountId, tokenExpiresAt, os.Getenv("JWT_SECRET"))
 	if tokenErr != nil {
 		logger.Error("Error trying to generate access token token", tokenErr)

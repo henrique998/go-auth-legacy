@@ -10,7 +10,7 @@ content-type: application/json
 
 ###
 
-POST https://3333-henrique998-goauth-8h49qimho84.ws-us114.gitpod.io/login
+POST https://3333-henrique998-goauth-8h49qimho84.ws-us114.gitpod.io/session/login
 content-type: application/json
 
 {
@@ -29,4 +29,8 @@ content-type: application/json
 
 ### 
 
-POST https://3333-henrique998-goauth-8h49qimho84.ws-us114.gitpod.io/logout
+POST https://3333-henrique998-goauth-8h49qimho84.ws-us114.gitpod.io/session/logout
+
+### 
+
+POST https://3333-henrique998-goauth-8h49qimho84.ws-us114.gitpod.io/accounts/send-2fa-code
