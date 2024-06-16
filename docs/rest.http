@@ -34,3 +34,12 @@ POST https://3333-henrique998-goauth-8h49qimho84.ws-us114.gitpod.io/session/logo
 ### 
 
 POST https://3333-henrique998-goauth-8h49qimho84.ws-us114.gitpod.io/accounts/send-2fa-code
+
+###
+
+POST https://3333-henrique998-goauth-8h49qimho84.ws-us114.gitpod.io/accounts/verify-2fa-code
+content-type: application/json
+
+{
+  "code": "74a752002f5688f2ba9a"
+}
