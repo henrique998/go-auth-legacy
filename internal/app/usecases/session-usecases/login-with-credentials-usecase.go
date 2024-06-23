@@ -15,6 +15,7 @@ import (
 type LoginWithCredentialsUseCase struct {
 	Repo          contracts.AccountsRepository
 	RTRepo        contracts.RefreshTokensRepository
+	DevicesRepo   contracts.DevicesRepository
 	EmailProvider contracts.EmailProvider
 }
 
@@ -54,6 +55,30 @@ func (uc *LoginWithCredentialsUseCase) Execute(req request.LoginWithCredentialsR
 	}
 
 	now := time.Now()
+
+	device, deviceErr := uc.DevicesRepo.GetByIpAndAccountId(req.IP, account.ID)
+	if deviceErr != nil {
+		logger.Error("Error trying to retrive device data", err)
+		return "", "", errors.NewAppError("internal server error", 500)
+	}
+
+	if device == nil {
+		device = entities.NewDevice(
+			account.ID,
+			req.DeviceName,
+			req.UserAgent,
+			req.Platform,
+			req.IP,
+			time.Now(),
+		)
+
+		deviceErr = uc.DevicesRepo.Create(*device)
+		if deviceErr != nil {
+			logger.Error("Error trying to create device", err)
+			return "", "", errors.NewAppError("internal server error", 500)
+		}
+	}
+
 	account.LastLoginAt = &now
 	account.LastLoginCountry = &country
 	account.LastLoginCity = &city

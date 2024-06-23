@@ -3,7 +3,7 @@ package entities
 import (
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/henrique998/go-auth/internal/infra/utils"
 )
 
 type Account struct {
@@ -24,7 +24,7 @@ type Account struct {
 
 func NewAccount(name, email, pass, phone string) *Account {
 	return &Account{
-		ID:               uuid.New().String(),
+		ID:               utils.GenerateUUID(),
 		Name:             name,
 		Email:            email,
 		Pass:             pass,
