@@ -4,15 +4,13 @@ import (
 	"database/sql"
 
 	"github.com/henrique998/go-auth/internal/app/entities"
-	"github.com/henrique998/go-auth/internal/app/errors"
-	"github.com/henrique998/go-auth/internal/configs/logger"
 )
 
 type PGDevicesRepository struct {
 	Db *sql.DB
 }
 
-func (r *PGDevicesRepository) FindByIpAndAccountId(ip, accountId string) (*entities.Device, errors.IAppError) {
+func (r *PGDevicesRepository) FindByIpAndAccountId(ip, accountId string) (*entities.Device, error) {
 	var device entities.Device
 
 	query := "SELECT * FROM devices WHERE ip_address = $1 AND account_id = $2 LIMIT 1"
@@ -32,17 +30,13 @@ func (r *PGDevicesRepository) FindByIpAndAccountId(ip, accountId string) (*entit
 	)
 
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, nil
-		}
-		logger.Error("Error trying to find account!", err)
-		return nil, errors.NewAppError(err.Error(), 500)
+		return nil, err
 	}
 
 	return &device, nil
 }
 
-func (r *PGDevicesRepository) Create(device entities.Device) errors.IAppError {
+func (r *PGDevicesRepository) Create(device entities.Device) error {
 	query :=
 		`INSERT INTO devices (id, account_id, device_name, user_agent, platform, ip_address, created_at, updated_at, last_login_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
@@ -59,13 +53,13 @@ func (r *PGDevicesRepository) Create(device entities.Device) errors.IAppError {
 		device.LastLoginAt,
 	)
 	if err != nil {
-		return errors.NewAppError(err.Error(), 500)
+		return err
 	}
 
 	return nil
 }
 
-func (r *PGDevicesRepository) Update(device entities.Device) errors.IAppError {
+func (r *PGDevicesRepository) Update(device entities.Device) error {
 	query := "UPDATE devices SET device_name = $1, updated_at = $2 WHERE id = $3"
 
 	_, err := r.Db.Exec(
@@ -75,7 +69,7 @@ func (r *PGDevicesRepository) Update(device entities.Device) errors.IAppError {
 		device.ID,
 	)
 	if err != nil {
-		return errors.NewAppError(err.Error(), 500)
+		return err
 	}
 
 	return nil

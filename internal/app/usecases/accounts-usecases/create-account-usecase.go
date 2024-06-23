@@ -1,8 +1,8 @@
 package accountsusecases
 
 import (
-	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 
@@ -25,32 +25,31 @@ func (uc *CreateAccountUseCase) Execute(req request.CreateAccountRequest) appErr
 
 	account, err := uc.Repo.FindByEmail(req.Email)
 	if err != nil {
-		return err
+		logger.Error("Error trying to find account", err)
+		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
 	}
 
 	if account != nil {
-		logger.Error("Error while validate account.", errors.New("account already exists"))
 		return appError.NewAppError("account already exists", 400)
 	}
 
 	pass_hash, passErr := utils.HashPass(req.Pass)
 	if passErr != nil {
-		logger.Error("Error trying to hash password.", passErr)
-		return appError.NewAppError("Internal server error", 500)
+		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
 	}
 
 	data := entities.NewAccount(req.Name, req.Email, pass_hash, req.Phone)
 
 	err = uc.Repo.Create(*data)
 	if err != nil {
-		logger.Error("Error trying to create account.", errors.New(err.GetMessage()))
-		return appError.NewAppError("Internal server error", 500)
+		logger.Error("Error trying to create account.", err)
+		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
 	}
 
 	tokenString, tokenErr := utils.GenerateToken(10)
 	if tokenErr != nil {
 		logger.Error("Error trying to generate token.", passErr)
-		return appError.NewAppError("Internal server error", 500)
+		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
 	}
 
 	expiresAt := time.Now().Add(time.Hour * 2)
@@ -59,8 +58,8 @@ func (uc *CreateAccountUseCase) Execute(req request.CreateAccountRequest) appErr
 
 	err = uc.VTRepo.Create(*verificationToken)
 	if err != nil {
-		logger.Error("Error trying to create verification token.", errors.New(err.GetMessage()))
-		return appError.NewAppError("Internal server error", 500)
+		logger.Error("Error trying to create verification token.", err)
+		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
 	}
 
 	appBaseUrl := os.Getenv("BASE_URL")
@@ -79,7 +78,7 @@ func (uc *CreateAccountUseCase) Execute(req request.CreateAccountRequest) appErr
 	emailErr := uc.EmailProvider.SendMail(req.Email, "Account verification.", body)
 	if emailErr != nil {
 		logger.Error("Error trying to send verification email.", emailErr)
-		return appError.NewAppError("Internal server error", 500)
+		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
 	}
 
 	return nil

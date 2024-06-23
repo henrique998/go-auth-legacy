@@ -4,30 +4,27 @@ import (
 	"database/sql"
 
 	"github.com/henrique998/go-auth/internal/app/entities"
-	"github.com/henrique998/go-auth/internal/app/errors"
-	"github.com/henrique998/go-auth/internal/configs/logger"
 )
 
 type PGVerificationTokensRepository struct {
 	Db *sql.DB
 }
 
-func (r *PGVerificationTokensRepository) FindByValue(val string) (*entities.VerificationToken, errors.IAppError) {
+func (r *PGVerificationTokensRepository) FindByValue(val string) (*entities.VerificationToken, error) {
 	var verificationToken entities.VerificationToken
 
 	query := "SELECT id, account_id, token, created_at, expires_at FROM verification_codes WHERE token = $1"
 	row := r.Db.QueryRow(query, val)
 
 	err := row.Scan(&verificationToken.ID, &verificationToken.AccountId, &verificationToken.Value, &verificationToken.CreatedAt, &verificationToken.ExpiresAt)
-	if err != nil && err != sql.ErrNoRows {
-		logger.Error("Error trying to find verification token!", err)
-		return nil, errors.NewAppError("Internal server error", 500)
+	if err != nil {
+		return nil, err
 	}
 
 	return &verificationToken, nil
 }
 
-func (r *PGVerificationTokensRepository) Create(verificationToken entities.VerificationToken) errors.IAppError {
+func (r *PGVerificationTokensRepository) Create(verificationToken entities.VerificationToken) error {
 	query := "INSERT INTO verification_codes (id, account_id, token, created_at, expires_at) VALUES($1, $2, $3, $4, $5)"
 
 	_, err := r.Db.Exec(query,
@@ -38,19 +35,18 @@ func (r *PGVerificationTokensRepository) Create(verificationToken entities.Verif
 		verificationToken.ExpiresAt,
 	)
 	if err != nil {
-		return errors.NewAppError(err.Error(), 400)
+		return err
 	}
 
 	return nil
 }
 
-func (r *PGVerificationTokensRepository) Delete(tokenId string) errors.IAppError {
+func (r *PGVerificationTokensRepository) Delete(tokenId string) error {
 	query := "DELETE FROM verification_codes WHERE id = $1"
 
 	_, err := r.Db.Exec(query, tokenId)
 	if err != nil {
-		logger.Error("Error trying to delete refresh token", err)
-		return errors.NewAppError("Internal server error", 500)
+		return err
 	}
 
 	return nil

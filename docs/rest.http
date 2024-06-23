@@ -15,7 +15,7 @@ content-type: application/json
 
 {
   "email": "henriquemonteiro037@gmail.com",
-  "password": "123456"
+  "password": "herozero10"
 }
 
 ### 
@@ -42,4 +42,24 @@ content-type: application/json
 
 {
   "code": "74a752002f5688f2ba9a"
+}
+
+###
+
+POST https://3333-henrique998-goauth-8h49qimho84.ws-us114.gitpod.io/accounts/send-new-pass-request
+content-type: application/json
+
+{
+  "email": "henriquemonteiro037@gmail.com"
+}
+
+###
+
+PUT https://3333-henrique998-goauth-8h49qimho84.ws-us114.gitpod.io/accounts/update-pass
+content-type: application/json
+
+{
+  "code": "81110e6d54fe70a821cb",
+  "newPass": "herozero10",
+  "newPassConfirmation": "herozero10"
 }

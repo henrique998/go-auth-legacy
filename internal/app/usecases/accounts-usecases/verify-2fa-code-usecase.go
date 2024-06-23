@@ -1,7 +1,6 @@
 package accountsusecases
 
 import (
-	"errors"
 	"net/http"
 	"time"
 
@@ -21,27 +20,28 @@ func (uc *Verify2faCodeUseCase) Execute(req request.Verify2faRequest) appError.I
 
 	verificationCode, err := uc.VTRepo.FindByValue(req.Code)
 	if err != nil {
-		logger.Error("Error while find verification code", errors.New(err.GetMessage()))
-		return err
+		logger.Error("Error while find verification code", err)
+		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
 	}
 
 	if verificationCode == nil {
-		return appError.NewAppError("Verification code not found!", http.StatusNotFound)
+		return appError.NewAppError("verification code not found.", http.StatusNotFound)
 	}
 
 	if verificationCode.AccountId != req.AccountId {
-		return appError.NewAppError("Unauthorized action!", http.StatusUnauthorized)
+		return appError.NewAppError("unauthorized action.", http.StatusUnauthorized)
 	}
 
 	now := time.Now()
 
 	if verificationCode.ExpiresAt.Before(now) {
-		return appError.NewAppError("Verification code has expired", http.StatusUnauthorized)
+		return appError.NewAppError("verification code has expired", http.StatusUnauthorized)
 	}
 
 	account, err := uc.Repo.FindById(req.AccountId)
 	if err != nil {
-		return err
+		logger.Error("Error trying to find account!", err)
+		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
 	}
 
 	if account.Is2faEnabled {

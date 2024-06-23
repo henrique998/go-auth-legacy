@@ -1,8 +1,8 @@
 package accountsusecases
 
 import (
-	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 
@@ -24,17 +24,18 @@ func (uc *Send2faCodeUseCase) Execute(accountId string) appError.IAppError {
 
 	account, err := uc.Repo.FindById(accountId)
 	if err != nil {
-		return err
+		logger.Error("Error trying to find account", err)
+		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
 	}
 
 	if account == nil {
-		logger.Error("Error while validate account.", errors.New("account does not exists"))
 		return appError.NewAppError("account does not exists", 404)
 	}
 
-	code, codeErr := utils.GenerateToken(10)
-	if codeErr != nil {
-		logger.Error("Error while generate 2fa code.", codeErr)
+	code, err := utils.GenerateToken(10)
+	if err != nil {
+		logger.Error("Error while generate 2fa code.", err)
+		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
 	}
 
 	message := fmt.Sprintf("Your verification code is: %s. Please use this code to complete your 2FA process. The code will expire in 10 minutes.", code)
@@ -44,7 +45,11 @@ func (uc *Send2faCodeUseCase) Execute(accountId string) appError.IAppError {
 	verificationCode := entities.NewVerificationToken(code, accountId, expiresAt)
 
 	uc.VTRepo.Create(*verificationCode)
-	uc.TwoFactorAuthProvider.Send(fromNumber, account.Phone, message)
+	err = uc.TwoFactorAuthProvider.Send(fromNumber, account.Phone, message)
+	if err != nil {
+		logger.Error("Error trying to send 2fa code!", err)
+		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
+	}
 
 	return nil
 }
