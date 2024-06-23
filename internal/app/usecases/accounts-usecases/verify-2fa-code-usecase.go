@@ -51,7 +51,7 @@ func (uc *Verify2faCodeUseCase) Execute(req request.Verify2faRequest) appError.I
 	account.Is2faEnabled = true
 	account.UpdatedAt = &now
 
-	uc.Repo.Update(account)
+	uc.Repo.Update(*account)
 
 	uc.VTRepo.Delete(verificationCode.ID)
 

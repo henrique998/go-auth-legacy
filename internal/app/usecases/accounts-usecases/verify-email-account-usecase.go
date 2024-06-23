@@ -34,7 +34,7 @@ func (uc *VerifyEmailUseCase) Execute(token string) appErrors.IAppError {
 	now := time.Now()
 	account.UpdatedAt = &now
 
-	uc.Repo.Update(account)
+	uc.Repo.Update(*account)
 
 	uc.VTRepo.Delete(verificationToken.ID)
 

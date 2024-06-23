@@ -25,11 +25,15 @@ func LoginWithCredentialsController(c fiber.Ctx) error {
 	rtRepo := repositories.PGRefreshTokensRepository{
 		Db: db,
 	}
+	devicesRepo := repositories.PGDevicesRepository{
+		Db: db,
+	}
 	emailProvider := providers.ResendEmailProvider{ApiKey: os.Getenv("RESEND_API_KEY")}
 
 	usecase := sessionusecases.LoginWithCredentialsUseCase{
 		Repo:          &repo,
 		RTRepo:        &rtRepo,
+		DevicesRepo:   &devicesRepo,
 		EmailProvider: &emailProvider,
 	}
 

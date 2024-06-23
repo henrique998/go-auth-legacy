@@ -56,7 +56,7 @@ func (uc *LoginWithCredentialsUseCase) Execute(req request.LoginWithCredentialsR
 
 	now := time.Now()
 
-	device, deviceErr := uc.DevicesRepo.GetByIpAndAccountId(req.IP, account.ID)
+	device, deviceErr := uc.DevicesRepo.FindByIpAndAccountId(req.IP, account.ID)
 	if deviceErr != nil {
 		logger.Error("Error trying to retrive device data", err)
 		return "", "", errors.NewAppError("internal server error", 500)
@@ -69,7 +69,7 @@ func (uc *LoginWithCredentialsUseCase) Execute(req request.LoginWithCredentialsR
 			req.UserAgent,
 			req.Platform,
 			req.IP,
-			time.Now(),
+			now,
 		)
 
 		deviceErr = uc.DevicesRepo.Create(*device)
@@ -77,6 +77,9 @@ func (uc *LoginWithCredentialsUseCase) Execute(req request.LoginWithCredentialsR
 			logger.Error("Error trying to create device", err)
 			return "", "", errors.NewAppError("internal server error", 500)
 		}
+	} else {
+		device.LastLoginAt = now
+		uc.DevicesRepo.Update(*device)
 	}
 
 	account.LastLoginAt = &now
@@ -84,7 +87,7 @@ func (uc *LoginWithCredentialsUseCase) Execute(req request.LoginWithCredentialsR
 	account.LastLoginCity = &city
 	account.LastLoginIp = &req.IP
 
-	accountErr = uc.Repo.Update(account)
+	accountErr = uc.Repo.Update(*account)
 	if accountErr != nil {
 		logger.Error("Error trying to update account data.", err)
 		return "", "", errors.NewAppError("internal server error.", 500)

@@ -6,6 +6,7 @@ import (
 )
 
 type DevicesRepository interface {
-	GetByIpAndAccountId(ip, accountId string) (*entities.Device, errors.IAppError)
+	FindByIpAndAccountId(ip, accountId string) (*entities.Device, errors.IAppError)
 	Create(device entities.Device) errors.IAppError
+	Update(device entities.Device) errors.IAppError
 }

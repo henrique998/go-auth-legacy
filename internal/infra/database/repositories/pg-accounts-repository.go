@@ -94,7 +94,7 @@ func (r *PGAccountsRepository) Create(account entities.Account) errors.IAppError
 	return nil
 }
 
-func (r *PGAccountsRepository) Update(account *entities.Account) errors.IAppError {
+func (r *PGAccountsRepository) Update(account entities.Account) errors.IAppError {
 	query := "UPDATE accounts SET name = $1, email = $2, password_hash = $3, phone_number = $4, is_2fa_enabled = $5, is_email_verified = $6, last_login_at = $7, last_login_ip = $8, last_login_country = $9, last_login_city = $10, updated_at = $11 WHERE id = $12"
 
 	_, err := r.Db.Exec(
