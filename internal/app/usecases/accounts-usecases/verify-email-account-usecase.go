@@ -1,7 +1,6 @@
 package accountsusecases
 
 import (
-	"net/http"
 	"time"
 
 	"github.com/henrique998/go-auth/internal/app/contracts"
@@ -17,17 +16,9 @@ type VerifyEmailUseCase struct {
 func (uc *VerifyEmailUseCase) Execute(token string) appError.IAppError {
 	logger.Info("Init VerifyEmail UseCase")
 
-	verificationToken, err := uc.VTRepo.FindByValue(token)
-	if err != nil {
-		logger.Error("Error while find verification code", err)
-		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
-	}
+	verificationToken := uc.VTRepo.FindByValue(token)
 
-	account, err := uc.Repo.FindById(verificationToken.AccountId)
-	if err != nil {
-		logger.Error("Error trying to find account!", err)
-		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
-	}
+	account := uc.Repo.FindById(verificationToken.AccountId)
 
 	if time.Now().After(verificationToken.ExpiresAt) {
 		return appError.NewAppError("verification token has expired!", 400)

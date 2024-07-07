@@ -21,11 +21,7 @@ type SendNewPassRequestUseCase struct {
 func (uc *SendNewPassRequestUseCase) Execute(email string) appErr.IAppError {
 	logger.Info("Init SendNewPassRequest UseCase")
 
-	account, err := uc.Repo.FindByEmail(email)
-	if err != nil {
-		logger.Error("Error trying to find account!", err)
-		return appErr.NewAppError("internal server error.", http.StatusInternalServerError)
-	}
+	account := uc.Repo.FindByEmail(email)
 
 	if account == nil {
 		return appErr.NewAppError("account does not exists.", http.StatusNotFound)

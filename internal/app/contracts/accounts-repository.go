@@ -5,8 +5,8 @@ import (
 )
 
 type AccountsRepository interface {
-	FindById(accountId string) (*entities.Account, error)
-	FindByEmail(email string) (*entities.Account, error)
+	FindById(accountId string) *entities.Account
+	FindByEmail(email string) *entities.Account
 	Create(a entities.Account) error
 	Update(a entities.Account) error
 }

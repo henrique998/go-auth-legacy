@@ -20,12 +20,12 @@ type LoginWithCredentialsUseCase struct {
 }
 
 func (uc *LoginWithCredentialsUseCase) Execute(req request.LoginWithCredentialsRequest) (string, string, errors.IAppError) {
-	account, accountErr := uc.Repo.FindByEmail(req.Email)
-	if account == nil || accountErr != nil {
+	account := uc.Repo.FindByEmail(req.Email)
+	if account == nil {
 		return "", "", errors.NewAppError("email or password incorrect!", 400)
 	}
 
-	passwordMatch := utils.ComparePassword(req.Pass, account.Pass)
+	passwordMatch := utils.ComparePassword(req.Pass, *account.Pass)
 	if !passwordMatch {
 		return "", "", errors.NewAppError("email or password incorrect!", 400)
 	}
@@ -54,26 +54,23 @@ func (uc *LoginWithCredentialsUseCase) Execute(req request.LoginWithCredentialsR
 		uc.EmailProvider.SendMail(req.Email, "login suspeito.", msg)
 	}
 
+	deviceDetails := utils.GetDeviceDetails(req.UserAgent)
 	now := time.Now()
 
-	device, deviceErr := uc.DevicesRepo.FindByIpAndAccountId(req.IP, account.ID)
-	if deviceErr != nil {
-		logger.Error("Error trying to retrive device data", err)
-		return "", "", errors.NewAppError("internal server error", 500)
-	}
+	device := uc.DevicesRepo.FindByIpAndAccountId(req.IP, account.ID)
 
 	if device == nil {
 		device = entities.NewDevice(
 			account.ID,
-			req.DeviceName,
+			deviceDetails.Name,
 			req.UserAgent,
-			req.Platform,
+			deviceDetails.Platform,
 			req.IP,
 			now,
 		)
 
-		deviceErr = uc.DevicesRepo.Create(*device)
-		if deviceErr != nil {
+		err = uc.DevicesRepo.Create(*device)
+		if err != nil {
 			logger.Error("Error trying to create device", err)
 			return "", "", errors.NewAppError("internal server error", 500)
 		}
@@ -87,8 +84,8 @@ func (uc *LoginWithCredentialsUseCase) Execute(req request.LoginWithCredentialsR
 	account.LastLoginCity = &city
 	account.LastLoginIp = &req.IP
 
-	accountErr = uc.Repo.Update(*account)
-	if accountErr != nil {
+	err = uc.Repo.Update(*account)
+	if err != nil {
 		logger.Error("Error trying to update account data.", err)
 		return "", "", errors.NewAppError("internal server error.", 500)
 	}

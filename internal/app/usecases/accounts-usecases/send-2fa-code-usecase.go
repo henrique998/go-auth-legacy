@@ -22,14 +22,14 @@ type Send2faCodeUseCase struct {
 func (uc *Send2faCodeUseCase) Execute(accountId string) appError.IAppError {
 	logger.Info("Init Send2FACode UseCase")
 
-	account, err := uc.Repo.FindById(accountId)
-	if err != nil {
-		logger.Error("Error trying to find account", err)
-		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
-	}
+	account := uc.Repo.FindById(accountId)
 
 	if account == nil {
-		return appError.NewAppError("account does not exists", 404)
+		return appError.NewAppError("account does not exists", http.StatusNotFound)
+	}
+
+	if account.Phone == nil {
+		return appError.NewAppError("account must have an phone number to complete 2fa proccess", http.StatusUnauthorized)
 	}
 
 	code, err := utils.GenerateToken(10)
@@ -45,7 +45,7 @@ func (uc *Send2faCodeUseCase) Execute(accountId string) appError.IAppError {
 	verificationCode := entities.NewVerificationToken(code, accountId, expiresAt)
 
 	uc.VTRepo.Create(*verificationCode)
-	err = uc.TwoFactorAuthProvider.Send(fromNumber, account.Phone, message)
+	err = uc.TwoFactorAuthProvider.Send(fromNumber, *account.Phone, message)
 	if err != nil {
 		logger.Error("Error trying to send 2fa code!", err)
 		return appError.NewAppError("internal server error.", http.StatusInternalServerError)

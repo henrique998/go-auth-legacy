@@ -10,8 +10,9 @@ type Account struct {
 	ID               string
 	Name             string
 	Email            string
-	Pass             string
-	Phone            string
+	Pass             *string
+	Phone            *string
+	ProviderId       *string
 	Is2faEnabled     bool
 	IsEmailVerified  bool
 	LastLoginAt      *time.Time
@@ -22,13 +23,34 @@ type Account struct {
 	UpdatedAt        *time.Time
 }
 
-func NewAccount(name, email, pass, phone string) *Account {
+func NewAccount(name, email, pass, phone, providerId string) *Account {
+	var passVal, phoneVal, providerIdVal *string
+
+	if pass == "" {
+		passVal = nil
+	} else {
+		passVal = &pass
+	}
+
+	if phone == "" {
+		phoneVal = nil
+	} else {
+		phoneVal = &phone
+	}
+
+	if providerId == "" {
+		providerIdVal = nil
+	} else {
+		providerIdVal = &providerId
+	}
+
 	return &Account{
 		ID:               utils.GenerateUUID(),
 		Name:             name,
 		Email:            email,
-		Pass:             pass,
-		Phone:            phone,
+		Pass:             passVal,
+		Phone:            phoneVal,
+		ProviderId:       providerIdVal,
 		Is2faEnabled:     false,
 		IsEmailVerified:  false,
 		LastLoginAt:      nil,
@@ -40,13 +62,14 @@ func NewAccount(name, email, pass, phone string) *Account {
 	}
 }
 
-func NewExistingAccount(id, name, email, pass, phone string, is2faEnabled, isEmailVerified bool, lastLogin time.Time, lastLoginIp, lastLoginCountry, lastLoginCity string, createdAt time.Time, updatedAt time.Time) *Account {
+func NewExistingAccount(id, name, email, pass, phone, providerId string, is2faEnabled, isEmailVerified bool, lastLogin time.Time, lastLoginIp, lastLoginCountry, lastLoginCity string, createdAt time.Time, updatedAt time.Time) *Account {
 	return &Account{
 		ID:               id,
 		Name:             name,
 		Email:            email,
-		Pass:             pass,
-		Phone:            phone,
+		Pass:             &pass,
+		Phone:            &phone,
+		ProviderId:       &providerId,
 		Is2faEnabled:     is2faEnabled,
 		IsEmailVerified:  isEmailVerified,
 		LastLoginAt:      &lastLogin,

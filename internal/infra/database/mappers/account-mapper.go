@@ -10,8 +10,9 @@ type DbAccountData struct {
 	ID               string
 	Name             string
 	Email            string
-	Pass             string
-	Phone            string
+	Pass             *string
+	Phone            *string
+	ProviderId       *string
 	Is2faEnabled     bool
 	IsEmailVerified  bool
 	LastLoginAt      *time.Time
@@ -23,6 +24,21 @@ type DbAccountData struct {
 }
 
 func MapToAccount(data DbAccountData) entities.Account {
+	var Pass string
+	if data.Pass != nil {
+		Pass = *data.Pass
+	}
+
+	var Phone string
+	if data.Phone != nil {
+		Phone = *data.Phone
+	}
+
+	var providerId string
+	if data.ProviderId != nil {
+		providerId = *data.ProviderId
+	}
+
 	var lastLoginAt time.Time
 	if data.LastLoginAt != nil {
 		lastLoginAt = *data.LastLoginAt
@@ -52,8 +68,9 @@ func MapToAccount(data DbAccountData) entities.Account {
 		data.ID,
 		data.Name,
 		data.Email,
-		data.Pass,
-		data.Phone,
+		Pass,
+		Phone,
+		providerId,
 		data.Is2faEnabled,
 		data.IsEmailVerified,
 		lastLoginAt,

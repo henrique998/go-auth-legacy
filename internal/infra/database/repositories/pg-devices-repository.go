@@ -4,13 +4,14 @@ import (
 	"database/sql"
 
 	"github.com/henrique998/go-auth/internal/app/entities"
+	"github.com/henrique998/go-auth/internal/configs/logger"
 )
 
 type PGDevicesRepository struct {
 	Db *sql.DB
 }
 
-func (r *PGDevicesRepository) FindByIpAndAccountId(ip, accountId string) (*entities.Device, error) {
+func (r *PGDevicesRepository) FindByIpAndAccountId(ip, accountId string) *entities.Device {
 	var device entities.Device
 
 	query := "SELECT * FROM devices WHERE ip_address = $1 AND account_id = $2 LIMIT 1"
@@ -30,10 +31,13 @@ func (r *PGDevicesRepository) FindByIpAndAccountId(ip, accountId string) (*entit
 	)
 
 	if err != nil {
-		return nil, err
+		if err != sql.ErrNoRows {
+			logger.Error("Error trying to retrive device data", err)
+		}
+		return nil
 	}
 
-	return &device, nil
+	return nil
 }
 
 func (r *PGDevicesRepository) Create(device entities.Device) error {
@@ -49,7 +53,7 @@ func (r *PGDevicesRepository) Create(device entities.Device) error {
 		device.Platform,
 		device.IPAddress,
 		device.CreatedAt,
-		*device.UpdatedAt,
+		device.UpdatedAt,
 		device.LastLoginAt,
 	)
 	if err != nil {

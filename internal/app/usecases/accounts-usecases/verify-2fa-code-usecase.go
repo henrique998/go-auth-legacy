@@ -18,11 +18,7 @@ type Verify2faCodeUseCase struct {
 func (uc *Verify2faCodeUseCase) Execute(req request.Verify2faRequest) appError.IAppError {
 	logger.Info("Init Verify2faCode UseCase")
 
-	verificationCode, err := uc.VTRepo.FindByValue(req.Code)
-	if err != nil {
-		logger.Error("Error while find verification code", err)
-		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
-	}
+	verificationCode := uc.VTRepo.FindByValue(req.Code)
 
 	if verificationCode == nil {
 		return appError.NewAppError("verification code not found.", http.StatusNotFound)
@@ -38,11 +34,7 @@ func (uc *Verify2faCodeUseCase) Execute(req request.Verify2faRequest) appError.I
 		return appError.NewAppError("verification code has expired", http.StatusUnauthorized)
 	}
 
-	account, err := uc.Repo.FindById(req.AccountId)
-	if err != nil {
-		logger.Error("Error trying to find account!", err)
-		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
-	}
+	account := uc.Repo.FindById(req.AccountId)
 
 	if account.Is2faEnabled {
 		return appError.NewAppError("Two factor authentication already carried out!", http.StatusBadRequest)

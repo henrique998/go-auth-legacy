@@ -4,13 +4,14 @@ import (
 	"database/sql"
 
 	"github.com/henrique998/go-auth/internal/app/entities"
+	"github.com/henrique998/go-auth/internal/configs/logger"
 )
 
 type PGVerificationTokensRepository struct {
 	Db *sql.DB
 }
 
-func (r *PGVerificationTokensRepository) FindByValue(val string) (*entities.VerificationToken, error) {
+func (r *PGVerificationTokensRepository) FindByValue(val string) *entities.VerificationToken {
 	var verificationToken entities.VerificationToken
 
 	query := "SELECT id, account_id, token, created_at, expires_at FROM verification_codes WHERE token = $1"
@@ -18,10 +19,13 @@ func (r *PGVerificationTokensRepository) FindByValue(val string) (*entities.Veri
 
 	err := row.Scan(&verificationToken.ID, &verificationToken.AccountId, &verificationToken.Value, &verificationToken.CreatedAt, &verificationToken.ExpiresAt)
 	if err != nil {
-		return nil, err
+		if err != sql.ErrNoRows {
+			logger.Error("Error trying to find verification code", err)
+		}
+		return nil
 	}
 
-	return &verificationToken, nil
+	return &verificationToken
 }
 
 func (r *PGVerificationTokensRepository) Create(verificationToken entities.VerificationToken) error {

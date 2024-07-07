@@ -10,7 +10,7 @@ func ToAccountHttp(account entities.Account) response.AccountResponse {
 		ID:        account.ID,
 		Name:      account.Name,
 		Email:     account.Email,
-		Phone:     account.Phone,
+		Phone:     *account.Phone,
 		CreatedAt: account.CreatedAt,
 	}
 }

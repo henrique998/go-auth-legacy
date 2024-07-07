@@ -23,11 +23,7 @@ type CreateAccountUseCase struct {
 func (uc *CreateAccountUseCase) Execute(req request.CreateAccountRequest) appError.IAppError {
 	logger.Info("Init CreateAccount UseCase")
 
-	account, err := uc.Repo.FindByEmail(req.Email)
-	if err != nil {
-		logger.Error("Error trying to find account", err)
-		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
-	}
+	account := uc.Repo.FindByEmail(req.Email)
 
 	if account != nil {
 		return appError.NewAppError("account already exists", 400)
@@ -38,9 +34,9 @@ func (uc *CreateAccountUseCase) Execute(req request.CreateAccountRequest) appErr
 		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
 	}
 
-	data := entities.NewAccount(req.Name, req.Email, pass_hash, req.Phone)
+	data := entities.NewAccount(req.Name, req.Email, pass_hash, req.Phone, "")
 
-	err = uc.Repo.Create(*data)
+	err := uc.Repo.Create(*data)
 	if err != nil {
 		logger.Error("Error trying to create account.", err)
 		return appError.NewAppError("internal server error.", http.StatusInternalServerError)

@@ -5,7 +5,7 @@ import (
 )
 
 type DevicesRepository interface {
-	FindByIpAndAccountId(ip, accountId string) (*entities.Device, error)
+	FindByIpAndAccountId(ip, accountId string) *entities.Device
 	Create(device entities.Device) error
 	Update(device entities.Device) error
 }

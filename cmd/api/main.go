@@ -6,6 +6,7 @@ import (
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/limiter"
+	"github.com/henrique998/go-auth/internal/configs/logger"
 	"github.com/henrique998/go-auth/internal/infra/endpoints"
 	"github.com/joho/godotenv"
 )
@@ -29,5 +30,5 @@ func main() {
 	}))
 
 	endpoints.SetupEndpoints(app)
-	app.Listen(":3333")
+	logger.Error("Project startup", app.Listen(":3333"))
 }

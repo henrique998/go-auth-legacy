@@ -5,7 +5,7 @@ import (
 )
 
 type RefreshTokensRepository interface {
-	FindByValue(val string) (*entities.RefreshToken, error)
+	FindByValue(val string) *entities.RefreshToken
 	Create(rt entities.RefreshToken) error
 	Delete(val string) error
 }

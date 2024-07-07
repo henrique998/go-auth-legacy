@@ -63,3 +63,16 @@ content-type: application/json
   "newPass": "herozero10",
   "newPassConfirmation": "herozero10"
 }
+
+###
+
+GET https://3333-henrique998-goauth-8h49qimho84.ws-us115.gitpod.io/session/google/redirect
+
+###
+
+POST https://3333-henrique998-goauth-8h49qimho84.ws-us115.gitpod.io/session/login/google
+content-type: application/json
+
+{
+  "code": "4/0ATx3LY5guHcd9suRWMSaAJlDgFM7luW2JQao3aEARgOfpljY_1JvwfKqe1Ba5vjg4JHc9Q"  
+}

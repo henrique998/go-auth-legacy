@@ -14,10 +14,11 @@ import (
 )
 
 func LoginWithCredentialsController(c fiber.Ctx) error {
-	ip := c.IP()
-
 	db := database.ConnectToDb()
 	defer db.Close()
+
+	ip := c.IP()
+	userAgent := c.Get("User-Agent")
 
 	repo := repositories.PGAccountsRepository{
 		Db: db,
@@ -41,6 +42,7 @@ func LoginWithCredentialsController(c fiber.Ctx) error {
 
 	var req request.LoginWithCredentialsRequest
 	req.IP = ip
+	req.UserAgent = userAgent
 
 	jsonErr := json.Unmarshal(body, &req)
 	if jsonErr != nil {

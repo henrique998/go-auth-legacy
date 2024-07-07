@@ -9,4 +9,16 @@ func sessionEndpoints(app *fiber.App) {
 	app.Post("/session/login", sessioncontrollers.LoginWithCredentialsController)
 	app.Post("/session/logout", sessioncontrollers.LogoutController)
 	app.Post("/session/refresh-token", sessioncontrollers.RefreshTokenUseController)
+
+	app.Get("/session/google/redirect", sessioncontrollers.RedirectGoogleLogin)
+	app.Get("/session/callback/google", func(c fiber.Ctx) error {
+		code := c.Query("code")
+
+		codeMap := map[string]string{
+			"code": code,
+		}
+
+		return c.JSON(codeMap)
+	})
+	app.Post("/session/login/google", sessioncontrollers.LoginWithGoogleController)
 }

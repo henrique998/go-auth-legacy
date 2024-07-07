@@ -4,13 +4,14 @@ import (
 	"database/sql"
 
 	"github.com/henrique998/go-auth/internal/app/entities"
+	"github.com/henrique998/go-auth/internal/configs/logger"
 )
 
 type PGRefreshTokensRepository struct {
 	Db *sql.DB
 }
 
-func (r *PGRefreshTokensRepository) FindByValue(val string) (*entities.RefreshToken, error) {
+func (r *PGRefreshTokensRepository) FindByValue(val string) *entities.RefreshToken {
 	var refreshToken entities.RefreshToken
 
 	query := "SELECT id, refresh_token, account_id, expires_at, created_at FROM refresh_tokens WHERE refresh_token = $1"
@@ -18,10 +19,13 @@ func (r *PGRefreshTokensRepository) FindByValue(val string) (*entities.RefreshTo
 
 	err := row.Scan(&refreshToken.ID, &refreshToken.Value, &refreshToken.AccountId, &refreshToken.ExpiresAt, &refreshToken.CreatedAt)
 	if err != nil {
-		return nil, err
+		if err != sql.ErrNoRows {
+			logger.Error("Error trying to find refresh token", err)
+		}
+		return nil
 	}
 
-	return &refreshToken, nil
+	return &refreshToken
 }
 
 func (r *PGRefreshTokensRepository) Create(rt entities.RefreshToken) error {
