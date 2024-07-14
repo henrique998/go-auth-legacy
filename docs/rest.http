@@ -76,3 +76,12 @@ content-type: application/json
 {
   "code": "4/0ATx3LY5guHcd9suRWMSaAJlDgFM7luW2JQao3aEARgOfpljY_1JvwfKqe1Ba5vjg4JHc9Q"  
 }
+
+###
+
+POST https://3333-henrique998-goauth-8h49qimho84.ws-us115.gitpod.io/session/magic-link/request
+content-type: application/json
+
+{
+  "email": "henriquemonteiro037@gmail.com"  
+}

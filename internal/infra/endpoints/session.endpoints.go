@@ -21,4 +21,7 @@ func sessionEndpoints(app *fiber.App) {
 		return c.JSON(codeMap)
 	})
 	app.Post("/session/login/google", sessioncontrollers.LoginWithGoogleController)
+
+	app.Post("/session/magic-link/request", sessioncontrollers.RequestMagicLinkController)
+	// app.Get("/session/login/magic-link", )
 }
