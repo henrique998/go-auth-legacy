@@ -5,5 +5,7 @@ import (
 )
 
 type MagicLinksRepository interface {
+	FindByValue(val string) *entities.MagicLink
 	Create(ml entities.MagicLink) error
+	Delete(mlId string) error
 }
