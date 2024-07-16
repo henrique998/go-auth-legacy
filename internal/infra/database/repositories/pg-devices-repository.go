@@ -40,6 +40,45 @@ func (r *PGDevicesRepository) FindByIpAndAccountId(ip, accountId string) *entiti
 	return nil
 }
 
+func (r *PGDevicesRepository) FindManyByAccountId(accountId string) []entities.Device {
+	query := "SELECT id, account_id, device_name, user_agent, platform, ip_address, created_at, updated_at, last_login_at FROM devices WHERE account_id = $1"
+
+	rows, err := r.Db.Query(query, accountId)
+	if err != nil {
+		return nil
+	}
+	defer rows.Close()
+
+	var devices []entities.Device
+
+	for rows.Next() {
+		var device entities.Device
+
+		err := rows.Scan(
+			&device.ID,
+			&device.AccountID,
+			&device.DeviceName,
+			&device.UserAgent,
+			&device.Platform,
+			&device.IPAddress,
+			&device.CreatedAt,
+			&device.UpdatedAt,
+			&device.LastLoginAt,
+		)
+		if err != nil {
+			return nil
+		}
+
+		devices = append(devices, device)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil
+	}
+
+	return devices
+}
+
 func (r *PGDevicesRepository) Create(device entities.Device) error {
 	query :=
 		`INSERT INTO devices (id, account_id, device_name, user_agent, platform, ip_address, created_at, updated_at, last_login_at)

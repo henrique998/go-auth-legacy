@@ -1,6 +1,7 @@
 package sessionusecases
 
 import (
+	"net/http"
 	"os"
 	"time"
 
@@ -23,6 +24,10 @@ func (uc *LoginWithCredentialsUseCase) Execute(req request.LoginWithCredentialsR
 	account := uc.Repo.FindByEmail(req.Email)
 	if account == nil {
 		return "", "", errors.NewAppError("email or password incorrect!", 400)
+	}
+
+	if account.Pass == nil {
+		return "", "", errors.NewAppError("Login method not allowed!", http.StatusUnauthorized)
 	}
 
 	passwordMatch := utils.ComparePassword(req.Pass, *account.Pass)

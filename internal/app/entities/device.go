@@ -7,15 +7,15 @@ import (
 )
 
 type Device struct {
-	ID          string
-	AccountID   string
-	DeviceName  string
-	UserAgent   string
-	Platform    string
-	IPAddress   string
-	CreatedAt   time.Time
-	UpdatedAt   *time.Time
-	LastLoginAt time.Time
+	ID          string     `json:"id"`
+	AccountID   string     `json:"account_id"`
+	DeviceName  string     `json:"device_name"`
+	UserAgent   string     `json:"user_agent"`
+	Platform    string     `json:"platform"`
+	IPAddress   string     `json:"ip_address"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   *time.Time `json:"updated_at"`
+	LastLoginAt time.Time  `json:"last_login_at"`
 }
 
 func NewDevice(accountId, deviceName, userAgent, platform, ip string, lastLoginAt time.Time) *Device {

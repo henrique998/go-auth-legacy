@@ -10,7 +10,7 @@ content-type: application/json
 
 ###
 
-POST https://3333-henrique998-goauth-8h49qimho84.ws-us114.gitpod.io/session/login
+POST https://3333-henrique998-goauth-8h49qimho84.ws-us115.gitpod.io/session/login
 content-type: application/json
 
 {
@@ -74,7 +74,7 @@ POST https://3333-henrique998-goauth-8h49qimho84.ws-us115.gitpod.io/session/logi
 content-type: application/json
 
 {
-  "code": "4/0ATx3LY5guHcd9suRWMSaAJlDgFM7luW2JQao3aEARgOfpljY_1JvwfKqe1Ba5vjg4JHc9Q"  
+  "code": "4/0AcvDMrBb8ROYDbQa64NQHp6lz_ko7EXEwKxVZzm8NdnCP3HvI5zQFJtksMYFVyG9kO-Obw"  
 }
 
 ###
@@ -85,3 +85,7 @@ content-type: application/json
 {
   "email": "henriquemonteiro037@gmail.com"  
 }
+
+###
+
+GET https://3333-henrique998-goauth-8h49qimho84.ws-us115.gitpod.io/accounts/devices
