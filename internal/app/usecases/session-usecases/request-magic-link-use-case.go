@@ -20,6 +20,8 @@ type RequestMagicLinkUseCase struct {
 }
 
 func (uc *RequestMagicLinkUseCase) Execute(email string) errors.IAppError {
+	logger.Info("Init RequestMagicLink UseCase")
+
 	account := uc.Repo.FindByEmail(email)
 	if account == nil {
 		return errors.NewAppError("email or password incorrect!", http.StatusBadRequest)

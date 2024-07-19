@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/gofiber/fiber/v3"
@@ -34,7 +33,6 @@ func AuthMiddleware() fiber.Handler {
 		}
 
 		account := repo.FindById(accountId)
-		fmt.Println(account)
 
 		if account == nil {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{

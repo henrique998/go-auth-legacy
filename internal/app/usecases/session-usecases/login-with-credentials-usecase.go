@@ -2,7 +2,6 @@ package sessionusecases
 
 import (
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/henrique998/go-auth/internal/app/contracts"
@@ -15,27 +14,62 @@ import (
 
 type LoginWithCredentialsUseCase struct {
 	Repo          contracts.AccountsRepository
-	RTRepo        contracts.RefreshTokensRepository
 	DevicesRepo   contracts.DevicesRepository
+	LARepository  contracts.LoginAttemptsRepository
 	EmailProvider contracts.EmailProvider
+	AtProvider    contracts.AuthTokensProvider
 }
 
 func (uc *LoginWithCredentialsUseCase) Execute(req request.LoginWithCredentialsRequest) (string, string, errors.IAppError) {
+	logger.Info("Init LoginWithCredentials UseCase")
+
 	account := uc.Repo.FindByEmail(req.Email)
 	if account == nil {
+		la := entities.NewLoginAttempt(req.Email, req.IP, req.UserAgent, false)
+
+		err := uc.LARepository.Create(*la)
+		if err != nil {
+			logger.Error("Error trying to create login attempt record.", err)
+		}
+
 		return "", "", errors.NewAppError("email or password incorrect!", 400)
 	}
 
 	if account.Pass == nil {
+		la := entities.NewLoginAttempt(req.Email, req.IP, req.UserAgent, false)
+
+		err := uc.LARepository.Create(*la)
+		if err != nil {
+			logger.Error("Error trying to create login attempt record.", err)
+		}
+
 		return "", "", errors.NewAppError("Login method not allowed!", http.StatusUnauthorized)
 	}
 
 	passwordMatch := utils.ComparePassword(req.Pass, *account.Pass)
 	if !passwordMatch {
+		la := entities.NewLoginAttempt(req.Email, req.IP, req.UserAgent, false)
+
+		err := uc.LARepository.Create(*la)
+		if err != nil {
+			logger.Error("Error trying to create login attempt record.", err)
+		}
+
 		return "", "", errors.NewAppError("email or password incorrect!", 400)
 	}
 
-	accessToken, refreshToken, tokenErr := uc.generateAuthTokens(account.ID)
+	if !account.IsEmailVerified {
+		la := entities.NewLoginAttempt(req.Email, req.IP, req.UserAgent, false)
+
+		err := uc.LARepository.Create(*la)
+		if err != nil {
+			logger.Error("Error trying to create login attempt record.", err)
+		}
+
+		return "", "", errors.NewAppError("Only verified accounts can log in!", http.StatusUnauthorized)
+	}
+
+	accessToken, refreshToken, tokenErr := uc.AtProvider.GenerateAuthTokens(account.ID)
 	if tokenErr != nil {
 		return "", "", tokenErr
 	}
@@ -95,27 +129,13 @@ func (uc *LoginWithCredentialsUseCase) Execute(req request.LoginWithCredentialsR
 		return "", "", errors.NewAppError("internal server error.", 500)
 	}
 
-	return accessToken, refreshToken, nil
-}
+	la := entities.NewLoginAttempt(account.Email, req.IP, req.UserAgent, true)
 
-func (uc *LoginWithCredentialsUseCase) generateAuthTokens(accountId string) (string, string, errors.IAppError) {
-	tokenExpiresAt := time.Now().Add(15 * time.Minute)
-	accessToken, tokenErr := utils.GenerateJWTToken(accountId, tokenExpiresAt, os.Getenv("JWT_SECRET"))
-	if tokenErr != nil {
-		logger.Error("Error trying to generate access token token", tokenErr)
-		return "", "", errors.NewAppError("internal server error.", 500)
+	err = uc.LARepository.Create(*la)
+	if err != nil {
+		logger.Error("Error trying to create login attempt record.", err)
+		return accessToken, refreshToken, nil
 	}
-
-	refreshTokenExpiresAt := time.Now().Add(time.Hour * 24 * 30)
-	refreshToken, tokenErr := utils.GenerateJWTToken(accountId, refreshTokenExpiresAt, os.Getenv("JWT_SECRET"))
-	if tokenErr != nil {
-		logger.Error("Error trying to generate refresh token", tokenErr)
-		return "", "", errors.NewAppError("internal server error.", 500)
-	}
-
-	rt := entities.NewRefreshToken(refreshToken, accountId, refreshTokenExpiresAt)
-
-	uc.RTRepo.Create(*rt)
 
 	return accessToken, refreshToken, nil
 }

@@ -46,7 +46,7 @@ content-type: application/json
 
 ###
 
-POST https://3333-henrique998-goauth-8h49qimho84.ws-us114.gitpod.io/accounts/send-new-pass-request
+POST https://3333-henrique998-goauth-8h49qimho84.ws-us115.gitpod.io/accounts/send-new-pass-request
 content-type: application/json
 
 {
@@ -55,11 +55,11 @@ content-type: application/json
 
 ###
 
-PUT https://3333-henrique998-goauth-8h49qimho84.ws-us114.gitpod.io/accounts/update-pass
+PUT https://3333-henrique998-goauth-8h49qimho84.ws-us115.gitpod.io/accounts/update-pass
 content-type: application/json
 
 {
-  "code": "81110e6d54fe70a821cb",
+  "code": "cae60bafbd770665ee57",
   "newPass": "herozero10",
   "newPassConfirmation": "herozero10"
 }

@@ -23,19 +23,26 @@ func LoginWithCredentialsController(c fiber.Ctx) error {
 	repo := repositories.PGAccountsRepository{
 		Db: db,
 	}
-	rtRepo := repositories.PGRefreshTokensRepository{
-		Db: db,
-	}
 	devicesRepo := repositories.PGDevicesRepository{
 		Db: db,
 	}
+	laRepo := repositories.PGLoginAttemptsRepository{
+		Db: db,
+	}
 	emailProvider := providers.ResendEmailProvider{ApiKey: os.Getenv("RESEND_API_KEY")}
+	rtRepo := repositories.PGRefreshTokensRepository{
+		Db: db,
+	}
+	atProvider := providers.AuthTokensProvider{
+		RTRepo: &rtRepo,
+	}
 
 	usecase := sessionusecases.LoginWithCredentialsUseCase{
 		Repo:          &repo,
-		RTRepo:        &rtRepo,
 		DevicesRepo:   &devicesRepo,
+		LARepository:  &laRepo,
 		EmailProvider: &emailProvider,
+		AtProvider:    &atProvider,
 	}
 
 	body := c.Body()

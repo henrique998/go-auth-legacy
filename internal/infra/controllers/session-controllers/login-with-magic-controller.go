@@ -1,7 +1,6 @@
 package sessioncontrollers
 
 import (
-	"fmt"
 	"os"
 	"time"
 
@@ -81,8 +80,6 @@ func LoginWithMagicLinkController(c fiber.Ctx) error {
 
 	c.Cookie(&accessTokenCookie)
 	c.Cookie(&refreshTokenCookie)
-
-	fmt.Println(c.Cookies("goauth:access_token"))
 
 	return c.JSON(fiber.Map{
 		"message": "success",

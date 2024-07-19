@@ -17,6 +17,8 @@ type RefreshTokenUseCase struct {
 }
 
 func (uc *RefreshTokenUseCase) Execute(refreshToken string) (response.AuthTokensResponse, errors.IAppError) {
+	logger.Info("Init RefreshToken UseCase")
+
 	accountId, err := utils.ValidateJWTToken(refreshToken)
 	if err != nil {
 		return response.AuthTokensResponse{}, err

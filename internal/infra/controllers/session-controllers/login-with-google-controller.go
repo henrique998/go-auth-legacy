@@ -23,18 +23,21 @@ func LoginWithGoogleController(c fiber.Ctx) error {
 	repo := repositories.PGAccountsRepository{
 		Db: db,
 	}
+	devicesRepo := repositories.PGDevicesRepository{
+		Db: db,
+	}
 	rtRepo := repositories.PGRefreshTokensRepository{
 		Db: db,
 	}
-	devicesRepo := repositories.PGDevicesRepository{
-		Db: db,
+	atProvider := providers.AuthTokensProvider{
+		RTRepo: &rtRepo,
 	}
 	emailProvider := providers.ResendEmailProvider{ApiKey: os.Getenv("RESEND_API_KEY")}
 
 	usecase := sessionusecases.LoginWithGoogleUseCase{
 		Repo:          &repo,
-		RTRepo:        &rtRepo,
 		EmailProvider: &emailProvider,
+		AtProvider:    &atProvider,
 		DevicesRepo:   &devicesRepo,
 	}
 

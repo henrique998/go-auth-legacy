@@ -6,6 +6,7 @@ import (
 	"github.com/henrique998/go-auth/internal/app/contracts"
 	"github.com/henrique998/go-auth/internal/app/entities"
 	appError "github.com/henrique998/go-auth/internal/app/errors"
+	"github.com/henrique998/go-auth/internal/configs/logger"
 )
 
 type GetAccountDevicesUseCase struct {
@@ -14,6 +15,8 @@ type GetAccountDevicesUseCase struct {
 }
 
 func (uc *GetAccountDevicesUseCase) Execute(accountId string) ([]entities.Device, appError.IAppError) {
+	logger.Info("Init GetAccountDevices UseCase")
+
 	account := uc.Repo.FindById(accountId)
 
 	if account == nil {

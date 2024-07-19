@@ -41,7 +41,7 @@ func (uc *UpdatePassUsecase) Execute(req request.NewPassRequest) appError.IAppEr
 		return appError.NewAppError("new password must contain 6 or more characters.", http.StatusBadRequest)
 	}
 
-	if utils.ComparePassword(req.NewPass, *account.Pass) {
+	if account.Pass != nil && utils.ComparePassword(req.NewPass, *account.Pass) {
 		return appError.NewAppError("new password cannot be the same as the previous one.", http.StatusBadRequest)
 	}
 

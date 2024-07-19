@@ -21,6 +21,8 @@ type LoginWithMagicLinkUseCase struct {
 }
 
 func (uc *LoginWithMagicLinkUseCase) Execute(req request.LoginWithMagicLinkRequest) (string, string, errors.IAppError) {
+	logger.Info("Init LoginWithMagicLink UseCase")
+
 	magicLink := uc.MLRepo.FindByValue(req.Code)
 	if magicLink == nil {
 		return "", "", errors.NewAppError("Code not found!", http.StatusNotFound)

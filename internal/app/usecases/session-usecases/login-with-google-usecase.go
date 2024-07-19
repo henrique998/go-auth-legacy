@@ -3,7 +3,6 @@ package sessionusecases
 import (
 	"encoding/json"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/henrique998/go-auth/internal/app/contracts"
@@ -17,8 +16,8 @@ import (
 
 type LoginWithGoogleUseCase struct {
 	Repo          contracts.AccountsRepository
-	RTRepo        contracts.RefreshTokensRepository
 	EmailProvider contracts.EmailProvider
+	AtProvider    contracts.AuthTokensProvider
 	DevicesRepo   contracts.DevicesRepository
 }
 
@@ -26,7 +25,7 @@ var userInfoUrl = "https://www.googleapis.com/oauth2/v2/userinfo?access_token="
 var personFieldsUrl = "https://people.googleapis.com/v1/people/me?personFields=phoneNumbers"
 
 func (uc *LoginWithGoogleUseCase) Execute(data request.LoginWithGoogleRequest) (string, string, errors.IAppError) {
-	logger.Info("Init LoginWithGoogle Controller")
+	logger.Info("Init LoginWithGoogle UseCase")
 
 	accessToken, err := utils.GetGoogleAccessToken(data.Code)
 	if err != nil {
@@ -81,7 +80,7 @@ func (uc *LoginWithGoogleUseCase) Execute(data request.LoginWithGoogleRequest) (
 		uc.Repo.Create(*account)
 	}
 
-	accessToken, refreshToken, tokenErr := uc.generateAuthTokens(account.ID)
+	accessToken, refreshToken, tokenErr := uc.AtProvider.GenerateAuthTokens(account.ID)
 	if tokenErr != nil {
 		return "", "", tokenErr
 	}
@@ -140,28 +139,6 @@ func (uc *LoginWithGoogleUseCase) Execute(data request.LoginWithGoogleRequest) (
 		logger.Error("Error trying to update account data.", err)
 		return "", "", errors.NewAppError("internal server error.", 500)
 	}
-
-	return accessToken, refreshToken, nil
-}
-
-func (uc *LoginWithGoogleUseCase) generateAuthTokens(accountId string) (string, string, errors.IAppError) {
-	tokenExpiresAt := time.Now().Add(15 * time.Minute)
-	accessToken, tokenErr := utils.GenerateJWTToken(accountId, tokenExpiresAt, os.Getenv("JWT_SECRET"))
-	if tokenErr != nil {
-		logger.Error("Error trying to generate access token token", tokenErr)
-		return "", "", errors.NewAppError("internal server error.", 500)
-	}
-
-	refreshTokenExpiresAt := time.Now().Add(time.Hour * 24 * 30)
-	refreshToken, tokenErr := utils.GenerateJWTToken(accountId, refreshTokenExpiresAt, os.Getenv("JWT_SECRET"))
-	if tokenErr != nil {
-		logger.Error("Error trying to generate refresh token", tokenErr)
-		return "", "", errors.NewAppError("internal server error.", 500)
-	}
-
-	rt := entities.NewRefreshToken(refreshToken, accountId, refreshTokenExpiresAt)
-
-	uc.RTRepo.Create(*rt)
 
 	return accessToken, refreshToken, nil
 }
