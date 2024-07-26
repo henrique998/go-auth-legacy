@@ -37,7 +37,7 @@ func (r *PGDevicesRepository) FindByIpAndAccountId(ip, accountId string) *entiti
 		return nil
 	}
 
-	return nil
+	return &device
 }
 
 func (r *PGDevicesRepository) FindManyByAccountId(accountId string) []entities.Device {

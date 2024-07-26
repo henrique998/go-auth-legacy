@@ -45,7 +45,7 @@ func (r *PGAccountsRepository) FindById(accountId string) *entities.Account {
 func (r *PGAccountsRepository) FindByEmail(email string) *entities.Account {
 	var account entities.Account
 
-	query := "SELECT id, name, email, password_hash, phone_number, provider_id, is_2fa_enabled, last_login_at, last_login_ip, last_login_country, last_login_city, created_at, updated_at FROM accounts WHERE email = $1"
+	query := "SELECT id, name, email, password_hash, phone_number, provider_id, is_2fa_enabled, last_login_at, last_login_ip, last_login_country, last_login_city, created_at, updated_at FROM accounts WHERE email = $1 LIMIT 1"
 	row := r.Db.QueryRow(query, email)
 
 	err := row.Scan(
