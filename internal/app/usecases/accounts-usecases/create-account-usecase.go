@@ -26,7 +26,7 @@ func (uc *CreateAccountUseCase) Execute(req request.CreateAccountRequest) appErr
 	account := uc.Repo.FindByEmail(req.Email)
 
 	if account != nil {
-		return appError.NewAppError("account already exists", 400)
+		return appError.NewAppError("account already exists", http.StatusBadRequest)
 	}
 
 	pass_hash, passErr := utils.HashPass(req.Pass)
