@@ -22,7 +22,7 @@ func (uc *UpdatePassUsecase) Execute(req request.NewPassRequest) appError.IAppEr
 	code := uc.VTRepo.FindByValue(req.Code)
 
 	if code == nil {
-		return appError.NewAppError("code not found.", http.StatusNotFound)
+		return appError.NewAppError("code not found", http.StatusNotFound)
 	}
 
 	account := uc.Repo.FindById(code.AccountId)
@@ -30,25 +30,25 @@ func (uc *UpdatePassUsecase) Execute(req request.NewPassRequest) appError.IAppEr
 	now := time.Now()
 
 	if now.After(code.ExpiresAt) {
-		return appError.NewAppError("code has expired.", http.StatusUnauthorized)
+		return appError.NewAppError("code has expired", http.StatusUnauthorized)
 	}
 
 	if req.NewPass != req.NewPassConfirmation {
-		return appError.NewAppError("new password and confirmation must be equals.", http.StatusBadRequest)
+		return appError.NewAppError("new password and confirmation must be equals", http.StatusBadRequest)
 	}
 
 	if len(req.NewPass) < 6 {
-		return appError.NewAppError("new password must contain 6 or more characters.", http.StatusBadRequest)
+		return appError.NewAppError("new password must contain 6 or more characters", http.StatusBadRequest)
 	}
 
 	if account.Pass != nil && utils.ComparePassword(req.NewPass, *account.Pass) {
-		return appError.NewAppError("new password cannot be the same as the previous one.", http.StatusBadRequest)
+		return appError.NewAppError("new password cannot be the same as the previous one", http.StatusBadRequest)
 	}
 
 	newPassHash, err := utils.HashPass(req.NewPass)
 	if err != nil {
 		logger.Error("Error trying to hash new password", err)
-		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
+		return appError.NewAppError("internal server error", http.StatusInternalServerError)
 	}
 
 	account.Pass = &newPassHash

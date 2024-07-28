@@ -21,11 +21,11 @@ func (uc *Verify2faCodeUseCase) Execute(req request.Verify2faRequest) appError.I
 	verificationCode := uc.VTRepo.FindByValue(req.Code)
 
 	if verificationCode == nil {
-		return appError.NewAppError("verification code not found.", http.StatusNotFound)
+		return appError.NewAppError("verification code not found", http.StatusNotFound)
 	}
 
 	if verificationCode.AccountId != req.AccountId {
-		return appError.NewAppError("unauthorized action.", http.StatusUnauthorized)
+		return appError.NewAppError("unauthorized action", http.StatusUnauthorized)
 	}
 
 	now := time.Now()
@@ -37,7 +37,7 @@ func (uc *Verify2faCodeUseCase) Execute(req request.Verify2faRequest) appError.I
 	account := uc.Repo.FindById(req.AccountId)
 
 	if account.Is2faEnabled {
-		return appError.NewAppError("Two factor authentication already carried out!", http.StatusBadRequest)
+		return appError.NewAppError("Two factor authentication already carried out", http.StatusUnauthorized)
 	}
 
 	account.Is2faEnabled = true

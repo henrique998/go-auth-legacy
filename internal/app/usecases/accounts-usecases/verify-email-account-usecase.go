@@ -1,6 +1,7 @@
 package accountsusecases
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/henrique998/go-auth/internal/app/contracts"
@@ -18,10 +19,14 @@ func (uc *VerifyEmailUseCase) Execute(token string) appError.IAppError {
 
 	verificationToken := uc.VTRepo.FindByValue(token)
 
+	if time.Now().After(verificationToken.ExpiresAt) {
+		return appError.NewAppError("verification code has expired", http.StatusUnauthorized)
+	}
+
 	account := uc.Repo.FindById(verificationToken.AccountId)
 
-	if time.Now().After(verificationToken.ExpiresAt) {
-		return appError.NewAppError("verification token has expired!", 400)
+	if account.IsEmailVerified {
+		return appError.NewAppError("the email has already been verified", http.StatusUnauthorized)
 	}
 
 	account.IsEmailVerified = true

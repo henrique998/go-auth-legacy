@@ -24,7 +24,7 @@ func (uc *SendNewPassRequestUseCase) Execute(email string) appErr.IAppError {
 	account := uc.Repo.FindByEmail(email)
 
 	if account == nil {
-		return appErr.NewAppError("account does not exists.", http.StatusNotFound)
+		return appErr.NewAppError("account does not exists", http.StatusNotFound)
 	}
 
 	code, err := utils.GenerateToken(10)
