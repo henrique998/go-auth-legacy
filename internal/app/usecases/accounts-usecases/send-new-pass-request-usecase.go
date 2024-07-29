@@ -14,7 +14,7 @@ import (
 
 type SendNewPassRequestUseCase struct {
 	Repo          contracts.AccountsRepository
-	VTRepo        contracts.VerificationTokensRepository
+	VTRepo        contracts.VerificationCodesRepository
 	EmailProvider contracts.EmailProvider
 }
 
@@ -27,7 +27,7 @@ func (uc *SendNewPassRequestUseCase) Execute(email string) appErr.IAppError {
 		return appErr.NewAppError("account does not exists", http.StatusNotFound)
 	}
 
-	code, err := utils.GenerateToken(10)
+	code, err := utils.GenerateCode(10)
 	if err != nil {
 		logger.Error("Error trying to generate code!", err)
 		return appErr.NewAppError("internal server error", http.StatusInternalServerError)
@@ -36,7 +36,7 @@ func (uc *SendNewPassRequestUseCase) Execute(email string) appErr.IAppError {
 	message := fmt.Sprintf("Your verification code is: %s. Please use this code to complete your password reset process. The code will expire in 10 minutes.", code)
 	expiresAt := time.Now().Add(10 * time.Minute)
 
-	verificationCode := entities.NewVerificationToken(code, account.ID, expiresAt)
+	verificationCode := entities.NewVerificationCode(code, account.ID, expiresAt)
 
 	uc.VTRepo.Create(*verificationCode)
 	uc.EmailProvider.SendMail(email, "Password reset", message)

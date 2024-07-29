@@ -11,21 +11,21 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestPGVerificationTokensRepository_FindByValue(t *testing.T) {
+func TestPGVerificationCodesRepository_FindByValue(t *testing.T) {
 	assert := assert.New(t)
 
 	db, mock, err := sqlmock.New()
 	assert.NoError(err)
 	defer db.Close()
 
-	repo := PGVerificationTokensRepository{Db: db}
+	repo := PGVerificationCodesRepository{Db: db}
 
 	id := "fake-id"
 	accountId := "fake-account-id"
 	expiresAt := time.Now().Add(15 * time.Minute)
 	token, _ := utils.GenerateJWTToken(accountId, expiresAt, "JWT_SECRET")
 
-	data := entities.VerificationToken{
+	data := entities.VerificationCode{
 		ID:        id,
 		AccountId: accountId,
 		Value:     token,
@@ -71,21 +71,21 @@ func TestPGVerificationTokensRepository_FindByValue(t *testing.T) {
 	})
 }
 
-func TestPGVerificationTokensRepository_Create(t *testing.T) {
+func TestPGVerificationCodesRepository_Create(t *testing.T) {
 	assert := assert.New(t)
 
 	db, mock, err := sqlmock.New()
 	assert.NoError(err)
 	defer db.Close()
 
-	repo := PGVerificationTokensRepository{Db: db}
+	repo := PGVerificationCodesRepository{Db: db}
 
 	id := "fake-id"
 	accountId := "fake-account-id"
 	expiresAt := time.Now().Add(15 * time.Minute)
 	token, _ := utils.GenerateJWTToken(accountId, expiresAt, "JWT_SECRET")
 
-	data := entities.VerificationToken{
+	data := entities.VerificationCode{
 		ID:        id,
 		AccountId: accountId,
 		Value:     token,
@@ -131,14 +131,14 @@ func TestPGVerificationTokensRepository_Create(t *testing.T) {
 	})
 }
 
-func TestPGVerificationTokensRepository_Delete(t *testing.T) {
+func TestPGVerificationCodesRepository_Delete(t *testing.T) {
 	assert := assert.New(t)
 
 	db, mock, err := sqlmock.New()
 	assert.NoError(err)
 	defer db.Close()
 
-	repo := PGVerificationTokensRepository{Db: db}
+	repo := PGVerificationCodesRepository{Db: db}
 
 	id := "fake-id"
 	query := `DELETE FROM verification_codes WHERE id = \$1`

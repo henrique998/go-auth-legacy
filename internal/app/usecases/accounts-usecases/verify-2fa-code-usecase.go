@@ -12,7 +12,7 @@ import (
 
 type Verify2faCodeUseCase struct {
 	Repo   contracts.AccountsRepository
-	VTRepo contracts.VerificationTokensRepository
+	VTRepo contracts.VerificationCodesRepository
 }
 
 func (uc *Verify2faCodeUseCase) Execute(req request.Verify2faRequest) appError.IAppError {

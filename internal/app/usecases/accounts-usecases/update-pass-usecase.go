@@ -13,7 +13,7 @@ import (
 
 type UpdatePassUsecase struct {
 	Repo   contracts.AccountsRepository
-	VTRepo contracts.VerificationTokensRepository
+	VTRepo contracts.VerificationCodesRepository
 }
 
 func (uc *UpdatePassUsecase) Execute(req request.NewPassRequest) appError.IAppError {

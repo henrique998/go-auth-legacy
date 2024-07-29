@@ -27,7 +27,7 @@ func (uc *RequestMagicLinkUseCase) Execute(email string) errors.IAppError {
 		return errors.NewAppError("email or password incorrect!", http.StatusBadRequest)
 	}
 
-	code, err := utils.GenerateToken(32)
+	code, err := utils.GenerateCode(32)
 	if err != nil {
 		logger.Error("Error trying to generate magic link code", err)
 		return errors.NewAppError("internal server error!", http.StatusInternalServerError)

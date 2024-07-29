@@ -16,7 +16,7 @@ import (
 
 type CreateAccountUseCase struct {
 	Repo          contracts.AccountsRepository
-	VTRepo        contracts.VerificationTokensRepository
+	VTRepo        contracts.VerificationCodesRepository
 	EmailProvider contracts.EmailProvider
 }
 
@@ -42,24 +42,24 @@ func (uc *CreateAccountUseCase) Execute(req request.CreateAccountRequest) appErr
 		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
 	}
 
-	tokenString, tokenErr := utils.GenerateToken(10)
-	if tokenErr != nil {
-		logger.Error("Error trying to generate token.", passErr)
+	codeString, codeErr := utils.GenerateCode(10)
+	if codeErr != nil {
+		logger.Error("Error trying to generate code.", passErr)
 		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
 	}
 
 	expiresAt := time.Now().Add(time.Hour * 2)
 
-	verificationToken := entities.NewVerificationToken(tokenString, data.ID, expiresAt)
+	verificationCode := entities.NewVerificationCode(codeString, data.ID, expiresAt)
 
-	err = uc.VTRepo.Create(*verificationToken)
+	err = uc.VTRepo.Create(*verificationCode)
 	if err != nil {
-		logger.Error("Error trying to create verification token.", err)
+		logger.Error("Error trying to create verification code.", err)
 		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
 	}
 
 	appBaseUrl := os.Getenv("BASE_URL")
-	verificationUrl := fmt.Sprintf("%saccounts/verify-email?token=%s", appBaseUrl, tokenString)
+	verificationUrl := fmt.Sprintf("%saccounts/verify-email?code=%s", appBaseUrl, codeString)
 
 	body := fmt.Sprintf(`Olá, 
 	

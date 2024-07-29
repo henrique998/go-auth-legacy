@@ -18,7 +18,7 @@ func TestVerifyEmailAccountUseCase(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockAccountsRepo := mocks.NewMockAccountsRepository(ctrl)
-	mockVTRepo := mocks.NewMockVerificationTokensRepository(ctrl)
+	mockVTRepo := mocks.NewMockVerificationCodesRepository(ctrl)
 
 	sut := VerifyEmailUseCase{
 		Repo:   mockAccountsRepo,
@@ -26,9 +26,9 @@ func TestVerifyEmailAccountUseCase(t *testing.T) {
 	}
 
 	t.Run("It should not be able to complete email verification flow if code has expired", func(t *testing.T) {
-		codeStr, _ := utils.GenerateToken(10)
+		codeStr, _ := utils.GenerateCode(10)
 		account := entities.NewAccount("jhon doe", "jhondoe@gmail.com", "123456", "999999999", "")
-		code := entities.NewVerificationToken(codeStr, account.ID, time.Now().Add(-1*time.Hour))
+		code := entities.NewVerificationCode(codeStr, account.ID, time.Now().Add(-1*time.Hour))
 
 		mockVTRepo.EXPECT().FindByValue(codeStr).Return(code)
 
@@ -57,8 +57,8 @@ func TestVerifyEmailAccountUseCase(t *testing.T) {
 			time.Now().Add(-10*(time.Hour*24*10)),
 			time.Now().Add(-5*time.Hour),
 		)
-		codeStr, _ := utils.GenerateToken(10)
-		code := entities.NewVerificationToken(codeStr, accountId, time.Now().Add(10*time.Hour))
+		codeStr, _ := utils.GenerateCode(10)
+		code := entities.NewVerificationCode(codeStr, accountId, time.Now().Add(10*time.Hour))
 
 		mockVTRepo.EXPECT().FindByValue(codeStr).Return(code)
 		mockAccountsRepo.EXPECT().FindById(accountId).Return(account)
@@ -71,9 +71,9 @@ func TestVerifyEmailAccountUseCase(t *testing.T) {
 	})
 
 	t.Run("It should be able to complete email verification flow", func(t *testing.T) {
-		codeStr, _ := utils.GenerateToken(10)
+		codeStr, _ := utils.GenerateCode(10)
 		account := entities.NewAccount("jhon doe", "jhondoe@gmail.com", "123456", "999999999", "")
-		code := entities.NewVerificationToken(codeStr, account.ID, time.Now().Add(10*time.Minute))
+		code := entities.NewVerificationCode(codeStr, account.ID, time.Now().Add(10*time.Minute))
 
 		mockVTRepo.EXPECT().FindByValue(gomock.Any()).Return(code)
 		mockVTRepo.EXPECT().Delete(gomock.Any()).Return(nil)

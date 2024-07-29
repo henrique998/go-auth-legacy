@@ -17,7 +17,7 @@ func CreateAccountController(c fiber.Ctx) error {
 	defer db.Close()
 
 	repo := repositories.PGAccountsRepository{Db: db}
-	vtRepo := repositories.PGVerificationTokensRepository{Db: db}
+	vtRepo := repositories.PGVerificationCodesRepository{Db: db}
 	emailProvider := providers.ResendEmailProvider{ApiKey: os.Getenv("RESEND_API_KEY")}
 
 	usecase := accountsusecases.CreateAccountUseCase{

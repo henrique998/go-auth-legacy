@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-type VerificationToken struct {
+type VerificationCode struct {
 	ID        string
 	Value     string
 	AccountId string
@@ -14,8 +14,8 @@ type VerificationToken struct {
 	ExpiresAt time.Time
 }
 
-func NewVerificationToken(val, accountId string, expiresAt time.Time) *VerificationToken {
-	return &VerificationToken{
+func NewVerificationCode(val, accountId string, expiresAt time.Time) *VerificationCode {
+	return &VerificationCode{
 		ID:        uuid.New().String(),
 		Value:     val,
 		AccountId: accountId,
@@ -24,8 +24,8 @@ func NewVerificationToken(val, accountId string, expiresAt time.Time) *Verificat
 	}
 }
 
-func NewExistingerificationToken(id, val, accountId string, createdAt, expiresAt time.Time) *VerificationToken {
-	return &VerificationToken{
+func NewExistingerificationCode(id, val, accountId string, createdAt, expiresAt time.Time) *VerificationCode {
+	return &VerificationCode{
 		ID:        id,
 		Value:     val,
 		AccountId: accountId,

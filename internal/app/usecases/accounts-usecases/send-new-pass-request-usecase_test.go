@@ -16,7 +16,7 @@ func TestSendNewPassRequestUseCase(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockAccountsRepo := mocks.NewMockAccountsRepository(ctrl)
-	mockVTRepo := mocks.NewMockVerificationTokensRepository(ctrl)
+	mockVTRepo := mocks.NewMockVerificationCodesRepository(ctrl)
 	mockEmailProvider := mocks.NewMockEmailProvider(ctrl)
 
 	usecase := SendNewPassRequestUseCase{

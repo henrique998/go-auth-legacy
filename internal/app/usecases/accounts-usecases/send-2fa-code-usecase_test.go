@@ -17,7 +17,7 @@ func TestSend2faCodeUseCase(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockAccountsRepo := mocks.NewMockAccountsRepository(ctrl)
-	mockVTRepo := mocks.NewMockVerificationTokensRepository(ctrl)
+	mockVTRepo := mocks.NewMockVerificationCodesRepository(ctrl)
 	mockTFaProvider := mocks.NewMockTwoFactorAuthProvider(ctrl)
 
 	usecase := Send2faCodeUseCase{

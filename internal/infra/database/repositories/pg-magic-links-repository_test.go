@@ -21,7 +21,7 @@ func TestPGMagicLinksRepository_FindByValue(t *testing.T) {
 	repo := PGMagicLinksRepository{Db: db}
 
 	id := "fake-magic-link-id"
-	code, _ := utils.GenerateToken(10)
+	code, _ := utils.GenerateCode(10)
 	expiresAt := time.Now().Add(15 * time.Minute)
 
 	data := entities.MagicLink{
@@ -79,7 +79,7 @@ func TestPGMagicLinksRepository_Create(t *testing.T) {
 
 	repo := PGMagicLinksRepository{Db: db}
 
-	code, _ := utils.GenerateToken(10)
+	code, _ := utils.GenerateCode(10)
 
 	data := entities.MagicLink{
 		ID:        "fake-magic-link-id",

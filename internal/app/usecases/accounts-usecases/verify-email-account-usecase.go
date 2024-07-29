@@ -11,7 +11,7 @@ import (
 
 type VerifyEmailUseCase struct {
 	Repo   contracts.AccountsRepository
-	VTRepo contracts.VerificationTokensRepository
+	VTRepo contracts.VerificationCodesRepository
 }
 
 func (uc *VerifyEmailUseCase) Execute(token string) appError.IAppError {

@@ -15,7 +15,7 @@ import (
 
 type Send2faCodeUseCase struct {
 	Repo                  contracts.AccountsRepository
-	VTRepo                contracts.VerificationTokensRepository
+	VTRepo                contracts.VerificationCodesRepository
 	TwoFactorAuthProvider contracts.TwoFactorAuthProvider
 }
 
@@ -32,7 +32,7 @@ func (uc *Send2faCodeUseCase) Execute(accountId string) appError.IAppError {
 		return appError.NewAppError("account must have an phone number to complete 2fa proccess", http.StatusUnauthorized)
 	}
 
-	code, err := utils.GenerateToken(10)
+	code, err := utils.GenerateCode(10)
 	if err != nil {
 		logger.Error("Error while generate 2fa code.", err)
 		return appError.NewAppError("internal server error.", http.StatusInternalServerError)
@@ -42,7 +42,7 @@ func (uc *Send2faCodeUseCase) Execute(accountId string) appError.IAppError {
 	expiresAt := time.Now().Add(10 * time.Minute)
 	fromNumber := os.Getenv("TWILIO_FROM_PHONE_NUMBER")
 
-	verificationCode := entities.NewVerificationToken(code, accountId, expiresAt)
+	verificationCode := entities.NewVerificationCode(code, accountId, expiresAt)
 
 	uc.VTRepo.Create(*verificationCode)
 	err = uc.TwoFactorAuthProvider.Send(fromNumber, *account.Phone, message)

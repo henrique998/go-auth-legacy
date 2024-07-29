@@ -19,7 +19,7 @@ func TestUpdatePassUseCase(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockAccountsRepo := mocks.NewMockAccountsRepository(ctrl)
-	mockVTRepo := mocks.NewMockVerificationTokensRepository(ctrl)
+	mockVTRepo := mocks.NewMockVerificationCodesRepository(ctrl)
 
 	usecase := UpdatePassUsecase{
 		Repo:   mockAccountsRepo,
@@ -44,9 +44,9 @@ func TestUpdatePassUseCase(t *testing.T) {
 
 	t.Run("It should not be able to update pass if code has expired", func(t *testing.T) {
 		account := entities.NewAccount("jhon doe", "jhondoe@gmail.com", "123456", "999999999", "")
-		codeStr, _ := utils.GenerateToken(10)
+		codeStr, _ := utils.GenerateCode(10)
 
-		code := entities.NewVerificationToken(codeStr, account.ID, time.Now().Add(-1*time.Hour))
+		code := entities.NewVerificationCode(codeStr, account.ID, time.Now().Add(-1*time.Hour))
 
 		req := request.NewPassRequest{
 			Code:                codeStr,
@@ -66,9 +66,9 @@ func TestUpdatePassUseCase(t *testing.T) {
 
 	t.Run("It should not be able to update pass if pass and confirmation not equals", func(t *testing.T) {
 		account := entities.NewAccount("jhon doe", "jhondoe@gmail.com", "123456", "999999999", "")
-		codeStr, _ := utils.GenerateToken(10)
+		codeStr, _ := utils.GenerateCode(10)
 
-		code := entities.NewVerificationToken(codeStr, account.ID, time.Now().Add(10*time.Hour))
+		code := entities.NewVerificationCode(codeStr, account.ID, time.Now().Add(10*time.Hour))
 
 		req := request.NewPassRequest{
 			Code:                codeStr,
@@ -88,9 +88,9 @@ func TestUpdatePassUseCase(t *testing.T) {
 
 	t.Run("It should not be able to update pass if new pass less than 6 characters", func(t *testing.T) {
 		account := entities.NewAccount("jhon doe", "jhondoe@gmail.com", "123456", "999999999", "")
-		codeStr, _ := utils.GenerateToken(10)
+		codeStr, _ := utils.GenerateCode(10)
 
-		code := entities.NewVerificationToken(codeStr, account.ID, time.Now().Add(10*time.Hour))
+		code := entities.NewVerificationCode(codeStr, account.ID, time.Now().Add(10*time.Hour))
 
 		req := request.NewPassRequest{
 			Code:                codeStr,
@@ -112,9 +112,9 @@ func TestUpdatePassUseCase(t *testing.T) {
 		hashedPass, _ := utils.HashPass("123456")
 
 		account := entities.NewAccount("jhon doe", "jhondoe@gmail.com", hashedPass, "999999999", "")
-		codeStr, _ := utils.GenerateToken(10)
+		codeStr, _ := utils.GenerateCode(10)
 
-		code := entities.NewVerificationToken(codeStr, account.ID, time.Now().Add(10*time.Hour))
+		code := entities.NewVerificationCode(codeStr, account.ID, time.Now().Add(10*time.Hour))
 
 		req := request.NewPassRequest{
 			Code:                codeStr,
@@ -134,10 +134,10 @@ func TestUpdatePassUseCase(t *testing.T) {
 
 	t.Run("It should be able to update pass", func(t *testing.T) {
 		account := entities.NewAccount("jhon doe", "jhondoe@gmail.com", "123456", "999999999", "")
-		codeStr, _ := utils.GenerateToken(10)
+		codeStr, _ := utils.GenerateCode(10)
 		now := time.Now()
 
-		code := entities.NewVerificationToken(codeStr, account.ID, now.Add(10*time.Hour))
+		code := entities.NewVerificationCode(codeStr, account.ID, now.Add(10*time.Hour))
 
 		req := request.NewPassRequest{
 			Code:                codeStr,

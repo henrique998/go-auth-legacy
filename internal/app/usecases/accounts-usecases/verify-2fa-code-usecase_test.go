@@ -19,7 +19,7 @@ func TestVerify2faCodeUseCase(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockAccountsRepo := mocks.NewMockAccountsRepository(ctrl)
-	mockVTRepo := mocks.NewMockVerificationTokensRepository(ctrl)
+	mockVTRepo := mocks.NewMockVerificationCodesRepository(ctrl)
 
 	sut := Verify2faCodeUseCase{
 		Repo:   mockAccountsRepo,
@@ -42,8 +42,8 @@ func TestVerify2faCodeUseCase(t *testing.T) {
 	})
 
 	t.Run("It should not be able to complete 2fa flow if the account ID does not belong to the logged in account", func(t *testing.T) {
-		codeStr, _ := utils.GenerateToken(10)
-		code := entities.NewVerificationToken(codeStr, "invalid-account-id", time.Now().Add(10*time.Minute))
+		codeStr, _ := utils.GenerateCode(10)
+		code := entities.NewVerificationCode(codeStr, "invalid-account-id", time.Now().Add(10*time.Minute))
 
 		req := request.Verify2faRequest{
 			Code:      codeStr,
@@ -60,9 +60,9 @@ func TestVerify2faCodeUseCase(t *testing.T) {
 	})
 
 	t.Run("It should not be able to complete 2fa flow it code has already expired", func(t *testing.T) {
-		codeStr, _ := utils.GenerateToken(10)
+		codeStr, _ := utils.GenerateCode(10)
 		accountId := "account-id"
-		code := entities.NewVerificationToken(codeStr, accountId, time.Now().Add(-1*time.Hour))
+		code := entities.NewVerificationCode(codeStr, accountId, time.Now().Add(-1*time.Hour))
 
 		mockVTRepo.EXPECT().FindByValue(codeStr).Return(code)
 
@@ -96,8 +96,8 @@ func TestVerify2faCodeUseCase(t *testing.T) {
 			time.Now().Add(-10*(time.Hour*24*10)),
 			time.Now().Add(-5*time.Hour),
 		)
-		codeStr, _ := utils.GenerateToken(10)
-		code := entities.NewVerificationToken(codeStr, accountId, time.Now().Add(10*time.Hour))
+		codeStr, _ := utils.GenerateCode(10)
+		code := entities.NewVerificationCode(codeStr, accountId, time.Now().Add(10*time.Hour))
 
 		mockVTRepo.EXPECT().FindByValue(codeStr).Return(code)
 		mockAccountsRepo.EXPECT().FindById(accountId).Return(account)
@@ -132,8 +132,8 @@ func TestVerify2faCodeUseCase(t *testing.T) {
 			time.Now().Add(-10*(time.Hour*24*10)),
 			time.Now().Add(-5*time.Hour),
 		)
-		codeStr, _ := utils.GenerateToken(10)
-		code := entities.NewVerificationToken(codeStr, accountId, time.Now().Add(10*time.Hour))
+		codeStr, _ := utils.GenerateCode(10)
+		code := entities.NewVerificationCode(codeStr, accountId, time.Now().Add(10*time.Hour))
 
 		mockVTRepo.EXPECT().FindByValue(codeStr).Return(code)
 		mockVTRepo.EXPECT().Delete(code.ID).Return(nil)

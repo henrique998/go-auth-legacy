@@ -32,7 +32,7 @@ func Send2FACodeController(c fiber.Ctx) error {
 	defer db.Close()
 
 	repo := repositories.PGAccountsRepository{Db: db}
-	vtRepo := repositories.PGVerificationTokensRepository{Db: db}
+	vtRepo := repositories.PGVerificationCodesRepository{Db: db}
 	twoFactorAuthProvider := providers.TwilioTwoFactorAuthProvider{
 		Client: twilioClient,
 	}

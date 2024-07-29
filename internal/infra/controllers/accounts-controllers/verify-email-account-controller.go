@@ -22,7 +22,7 @@ func VerifyEmailAccountController(c fiber.Ctx) error {
 	repo := repositories.PGAccountsRepository{
 		Db: db,
 	}
-	vtRepo := repositories.PGVerificationTokensRepository{
+	vtRepo := repositories.PGVerificationCodesRepository{
 		Db: db,
 	}
 
