@@ -18,6 +18,7 @@ type LoginWithCredentialsUseCase struct {
 	LARepository  contracts.LoginAttemptsRepository
 	EmailProvider contracts.EmailProvider
 	AtProvider    contracts.AuthTokensProvider
+	GLProvider    contracts.GeoLocationProvider
 }
 
 func (uc *LoginWithCredentialsUseCase) Execute(req request.LoginWithCredentialsRequest) (string, string, errors.IAppError) {
@@ -32,7 +33,7 @@ func (uc *LoginWithCredentialsUseCase) Execute(req request.LoginWithCredentialsR
 			logger.Error("Error trying to create login attempt record.", err)
 		}
 
-		return "", "", errors.NewAppError("email or password incorrect!", 400)
+		return "", "", errors.NewAppError("email or password incorrect!", http.StatusBadRequest)
 	}
 
 	if account.Pass == nil {
@@ -82,7 +83,7 @@ func (uc *LoginWithCredentialsUseCase) Execute(req request.LoginWithCredentialsR
 		lastCity = *account.LastLoginCity
 	}
 
-	country, city, err := utils.GetGeoLocation(req.IP)
+	country, city, err := uc.GLProvider.GetInfo(req.IP)
 	if err != nil {
 		logger.Error("Error trying to retrive geolocation data", err)
 		return "", "", errors.NewAppError("internal server error", 500)
@@ -90,7 +91,7 @@ func (uc *LoginWithCredentialsUseCase) Execute(req request.LoginWithCredentialsR
 
 	if lastCountry != "" && (lastCountry != country || lastCity != city) {
 		msg := "Sua conta foi acessada em outra localização. caso não tenha sido você recomendamos que altere sua senha. obrigado pela atenção!"
-		uc.EmailProvider.SendMail(req.Email, "login suspeito.", msg)
+		uc.EmailProvider.SendMail(req.Email, "login suspeito", msg)
 	}
 
 	deviceDetails := utils.GetDeviceDetails(req.UserAgent)
