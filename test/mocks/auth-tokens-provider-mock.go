@@ -54,3 +54,18 @@ func (mr *MockAuthTokensProviderMockRecorder) GenerateAuthTokens(accountId any) 
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateAuthTokens", reflect.TypeOf((*MockAuthTokensProvider)(nil).GenerateAuthTokens), accountId)
 }
+
+// ValidateJWTToken mocks base method.
+func (m *MockAuthTokensProvider) ValidateJWTToken(token string) (string, errors.IAppError) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ValidateJWTToken", token)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(errors.IAppError)
+	return ret0, ret1
+}
+
+// ValidateJWTToken indicates an expected call of ValidateJWTToken.
+func (mr *MockAuthTokensProviderMockRecorder) ValidateJWTToken(token any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ValidateJWTToken", reflect.TypeOf((*MockAuthTokensProvider)(nil).ValidateJWTToken), token)
+}

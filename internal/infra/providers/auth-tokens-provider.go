@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/henrique998/go-auth/internal/app/contracts"
 	"github.com/henrique998/go-auth/internal/app/entities"
 	"github.com/henrique998/go-auth/internal/app/errors"
@@ -36,4 +37,27 @@ func (p *AuthTokensProvider) GenerateAuthTokens(accountId string) (string, strin
 	p.RTRepo.Create(*rt)
 
 	return accessToken, refreshToken, nil
+}
+
+func (p *AuthTokensProvider) ValidateJWTToken(tokenString string) (string, errors.IAppError) {
+	token, err := jwt.Parse(tokenString, func(t *jwt.Token) (interface{}, error) {
+		return []byte(os.Getenv("JWT_SECRET")), nil
+	})
+	if err != nil {
+		return "", errors.NewAppError("invalid token", http.StatusUnauthorized)
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return "", errors.NewAppError("invalid token", http.StatusUnauthorized)
+	}
+
+	accountId := claims["sub"].(string)
+	exp := int64(claims["exp"].(float64))
+
+	if exp < time.Now().Unix() {
+		return "", errors.NewAppError("token expired", http.StatusUnauthorized)
+	}
+
+	return accountId, nil
 }

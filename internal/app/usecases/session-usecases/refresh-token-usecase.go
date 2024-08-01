@@ -3,9 +3,7 @@ package sessionusecases
 import (
 	"github.com/henrique998/go-auth/internal/app/contracts"
 	"github.com/henrique998/go-auth/internal/app/errors"
-	"github.com/henrique998/go-auth/internal/app/response"
 	"github.com/henrique998/go-auth/internal/configs/logger"
-	"github.com/henrique998/go-auth/internal/infra/utils"
 )
 
 type RefreshTokenUseCase struct {
@@ -13,25 +11,20 @@ type RefreshTokenUseCase struct {
 	ATRepo contracts.AuthTokensProvider
 }
 
-func (uc *RefreshTokenUseCase) Execute(refreshToken string) (response.AuthTokensResponse, errors.IAppError) {
+func (uc *RefreshTokenUseCase) Execute(refreshToken string) (string, string, errors.IAppError) {
 	logger.Info("Init RefreshToken UseCase")
 
-	accountId, err := utils.ValidateJWTToken(refreshToken)
+	accountId, err := uc.ATRepo.ValidateJWTToken(refreshToken)
 	if err != nil {
-		return response.AuthTokensResponse{}, err
+		return "", "", err
 	}
 
 	newAccessToken, newRefreshToken, err := uc.ATRepo.GenerateAuthTokens(accountId)
 	if err != nil {
-		return response.AuthTokensResponse{}, err
+		return "", "", err
 	}
 
 	uc.Repo.Delete(refreshToken)
 
-	res := response.AuthTokensResponse{
-		AccessToken:  newAccessToken,
-		RefreshToken: newRefreshToken,
-	}
-
-	return res, nil
+	return newAccessToken, newRefreshToken, nil
 }

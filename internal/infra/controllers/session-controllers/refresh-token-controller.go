@@ -32,14 +32,14 @@ func RefreshTokenUseController(c fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).SendString("Internal Server Error.")
 	}
 
-	res, err := usecase.Execute(req.RefreshToken)
+	accessToken, refreshToken, err := usecase.Execute(req.RefreshToken)
 	if err != nil {
 		return c.Status(err.GetStatus()).SendString(err.GetMessage())
 	}
 
 	accessTokenCookie := fiber.Cookie{
 		Name:     "goauth:access_token",
-		Value:    res.AccessToken,
+		Value:    accessToken,
 		Expires:  time.Now().Add(15 * time.Second),
 		HTTPOnly: true,
 		Path:     "/",
@@ -47,7 +47,7 @@ func RefreshTokenUseController(c fiber.Ctx) error {
 
 	refreshTokenCookie := fiber.Cookie{
 		Name:     "goauth:refresh_token",
-		Value:    res.RefreshToken,
+		Value:    refreshToken,
 		Expires:  time.Now().Add(time.Hour * 24 * 30),
 		HTTPOnly: true,
 		Path:     "/",
