@@ -24,7 +24,7 @@ func (uc *RequestMagicLinkUseCase) Execute(email string) errors.IAppError {
 
 	account := uc.Repo.FindByEmail(email)
 	if account == nil {
-		return errors.NewAppError("email or password incorrect!", http.StatusBadRequest)
+		return errors.NewAppError("account not found", http.StatusNotFound)
 	}
 
 	code, err := utils.GenerateCode(32)
