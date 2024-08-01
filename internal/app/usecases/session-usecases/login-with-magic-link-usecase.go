@@ -25,16 +25,16 @@ func (uc *LoginWithMagicLinkUseCase) Execute(req request.LoginWithMagicLinkReque
 
 	magicLink := uc.MLRepo.FindByValue(req.Code)
 	if magicLink == nil {
-		return "", "", errors.NewAppError("Code not found!", http.StatusNotFound)
+		return "", "", errors.NewAppError("Code not found", http.StatusNotFound)
 	}
 
 	if time.Now().After(magicLink.ExpiresAt) {
-		return "", "", errors.NewAppError("Code has expired!", http.StatusUnauthorized)
+		return "", "", errors.NewAppError("Code has expired", http.StatusUnauthorized)
 	}
 
 	account := uc.Repo.FindById(magicLink.AccountId)
 	if account == nil {
-		return "", "", errors.NewAppError("Account not found!", http.StatusNotFound)
+		return "", "", errors.NewAppError("Account not found", http.StatusNotFound)
 	}
 
 	accessToken, refreshToken, tokenErr := uc.ATProvider.GenerateAuthTokens(account.ID)
