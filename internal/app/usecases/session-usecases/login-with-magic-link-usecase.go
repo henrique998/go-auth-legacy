@@ -18,6 +18,7 @@ type LoginWithMagicLinkUseCase struct {
 	DevicesRepo   contracts.DevicesRepository
 	ATProvider    contracts.AuthTokensProvider
 	EmailProvider contracts.EmailProvider
+	GLProvider    contracts.GeoLocationProvider
 }
 
 func (uc *LoginWithMagicLinkUseCase) Execute(req request.LoginWithMagicLinkRequest) (string, string, errors.IAppError) {
@@ -50,7 +51,7 @@ func (uc *LoginWithMagicLinkUseCase) Execute(req request.LoginWithMagicLinkReque
 		lastCity = *account.LastLoginCity
 	}
 
-	country, city, geoErr := utils.GetGeoLocation(req.IP)
+	country, city, geoErr := uc.GLProvider.GetInfo(req.IP)
 	if geoErr != nil {
 		logger.Error("Error trying to retrive geolocation data", geoErr)
 		return "", "", errors.NewAppError("internal server error", 500)

@@ -19,6 +19,7 @@ type LoginWithGoogleUseCase struct {
 	EmailProvider contracts.EmailProvider
 	AtProvider    contracts.AuthTokensProvider
 	DevicesRepo   contracts.DevicesRepository
+	GLProvider    contracts.GeoLocationProvider
 }
 
 var userInfoUrl = "https://www.googleapis.com/oauth2/v2/userinfo?access_token="
@@ -93,7 +94,7 @@ func (uc *LoginWithGoogleUseCase) Execute(data request.LoginWithGoogleRequest) (
 		lastCity = *account.LastLoginCity
 	}
 
-	country, city, err := utils.GetGeoLocation(data.IP)
+	country, city, err := uc.GLProvider.GetInfo(data.IP)
 	if err != nil {
 		logger.Error("Error trying to retrive geolocation data", err)
 		return "", "", errors.NewAppError("internal server error", 500)

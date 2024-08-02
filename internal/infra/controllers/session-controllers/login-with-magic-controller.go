@@ -43,6 +43,9 @@ func LoginWithMagicLinkController(c fiber.Ctx) error {
 	emailProvider := providers.ResendEmailProvider{
 		ApiKey: os.Getenv("RESEND_API_KEY"),
 	}
+	glProvider := providers.IPStackGeoLocationProvider{
+		APiKey: os.Getenv("IPSTACK_API_KEY"),
+	}
 
 	usecase := sessionusecases.LoginWithMagicLinkUseCase{
 		Repo:          &repo,
@@ -50,6 +53,7 @@ func LoginWithMagicLinkController(c fiber.Ctx) error {
 		MLRepo:        &mlRepo,
 		ATProvider:    &atProvider,
 		EmailProvider: &emailProvider,
+		GLProvider:    &glProvider,
 	}
 
 	var req request.LoginWithMagicLinkRequest

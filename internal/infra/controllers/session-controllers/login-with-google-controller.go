@@ -33,12 +33,16 @@ func LoginWithGoogleController(c fiber.Ctx) error {
 		RTRepo: &rtRepo,
 	}
 	emailProvider := providers.ResendEmailProvider{ApiKey: os.Getenv("RESEND_API_KEY")}
+	glProvider := providers.IPStackGeoLocationProvider{
+		APiKey: os.Getenv("IPSTACK_API_KEY"),
+	}
 
 	usecase := sessionusecases.LoginWithGoogleUseCase{
 		Repo:          &repo,
 		EmailProvider: &emailProvider,
 		AtProvider:    &atProvider,
 		DevicesRepo:   &devicesRepo,
+		GLProvider:    &glProvider,
 	}
 
 	body := c.Body()

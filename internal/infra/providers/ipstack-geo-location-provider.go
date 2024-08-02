@@ -1,20 +1,22 @@
-package utils
+package providers
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 )
+
+type IPStackGeoLocationProvider struct {
+	APiKey string
+}
 
 type ipstackResponse struct {
 	CountryName string `json:"country_name"`
 	City        string `json:"city"`
 }
 
-func GetGeoLocation(ip string) (string, string, error) {
-	apiKey := os.Getenv("IPSTACK_API_KEY")
-	url := fmt.Sprintf("http://api.ipstack.com/%s?access_key=%s", ip, apiKey)
+func (p *IPStackGeoLocationProvider) GetInfo(ip string) (string, string, error) {
+	url := fmt.Sprintf("http://api.ipstack.com/%s?access_key=%s", ip, p.APiKey)
 
 	res, err := http.Get(url)
 	if err != nil {

@@ -24,6 +24,7 @@ func TestLoginWithMagicLinkUseCase(t *testing.T) {
 	mockDevicesRepo := mocks.NewMockDevicesRepository(ctrl)
 	mockATProvider := mocks.NewMockAuthTokensProvider(ctrl)
 	mockEmailProvider := mocks.NewMockEmailProvider(ctrl)
+	mockGLProvider := mocks.NewMockGeoLocationProvider(ctrl)
 
 	sut := LoginWithMagicLinkUseCase{
 		Repo:          mockAccountsRepo,
@@ -31,6 +32,7 @@ func TestLoginWithMagicLinkUseCase(t *testing.T) {
 		DevicesRepo:   mockDevicesRepo,
 		ATProvider:    mockATProvider,
 		EmailProvider: mockEmailProvider,
+		GLProvider:    mockGLProvider,
 	}
 
 	t.Run("It should not be able to login if magic link does not exists", func(t *testing.T) {
@@ -140,6 +142,7 @@ func TestLoginWithMagicLinkUseCase(t *testing.T) {
 		mockMLRepo.EXPECT().FindByValue(req.Code).Return(ml)
 		mockAccountsRepo.EXPECT().FindById(account.ID).Return(account)
 		mockATProvider.EXPECT().GenerateAuthTokens(account.ID).Return(accessTokenStr, refreshTokenStr, nil)
+		mockGLProvider.EXPECT().GetInfo(req.IP).Return("br", "sp", nil)
 		mockDevicesRepo.EXPECT().FindByIpAndAccountId(gomock.Any(), gomock.Any()).Return(nil)
 		mockDevicesRepo.EXPECT().Create(gomock.Any()).Return(nil)
 		mockAccountsRepo.EXPECT().Update(gomock.Any()).Return(nil)

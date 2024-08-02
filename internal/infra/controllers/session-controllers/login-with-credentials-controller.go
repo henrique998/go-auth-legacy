@@ -36,6 +36,9 @@ func LoginWithCredentialsController(c fiber.Ctx) error {
 	atProvider := providers.AuthTokensProvider{
 		RTRepo: &rtRepo,
 	}
+	glProvider := providers.IPStackGeoLocationProvider{
+		APiKey: os.Getenv("IPSTACK_API_KEY"),
+	}
 
 	usecase := sessionusecases.LoginWithCredentialsUseCase{
 		Repo:          &repo,
@@ -43,6 +46,7 @@ func LoginWithCredentialsController(c fiber.Ctx) error {
 		LARepository:  &laRepo,
 		EmailProvider: &emailProvider,
 		AtProvider:    &atProvider,
+		GLProvider:    &glProvider,
 	}
 
 	body := c.Body()
